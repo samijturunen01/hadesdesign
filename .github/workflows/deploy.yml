@@ -1,0 +1,86 @@
+# Builds the site and publishes it to GitHub Pages.
+#
+# Runs on every push to `main` (the production branch) and on demand from the
+# Actions tab. Work happens on other branches; merging to `main` = deploying.
+#
+# Repository variables (Settings → Secrets and variables → Actions → Variables):
+#   CUSTOM_DOMAIN            hadesdesign.fi – set ONLY when the domain is ready to
+#                            switch. Without it the build is a noindex preview served
+#                            from https://<user>.github.io/<repo>/.
+#   VITE_APPS_SCRIPT_URL     contact form web app URL (apps-script/README.md)
+#   VITE_RECAPTCHA_SITE_KEY  reCAPTCHA v3 site key (public)
+#   VITE_GA_MEASUREMENT_ID   optional – GA4 ID, or "off"
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deployment at a time; never cancel a deployment that is already running.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Resolve base path and indexing
+        id: target
+        run: |
+          REPO="${GITHUB_REPOSITORY#*/}"
+          if [[ -n "${{ vars.CUSTOM_DOMAIN }}" || "$REPO" == *.github.io ]]; then
+            echo "base=/" >> "$GITHUB_OUTPUT"
+            echo "noindex=" >> "$GITHUB_OUTPUT"
+            echo "Production build for ${{ vars.CUSTOM_DOMAIN || 'the user site' }}"
+          else
+            echo "base=/$REPO/" >> "$GITHUB_OUTPUT"
+            echo "noindex=true" >> "$GITHUB_OUTPUT"
+            echo "Preview build (noindex) for https://${GITHUB_REPOSITORY_OWNER}.github.io/$REPO/"
+          fi
+
+      - run: npm run lint
+
+      - name: Build (typecheck, client, prerender)
+        run: npm run build
+        env:
+          BASE_PATH: ${{ steps.target.outputs.base }}
+          VITE_NOINDEX: ${{ steps.target.outputs.noindex }}
+          VITE_SITE_URL: https://hadesdesign.fi
+          VITE_APPS_SCRIPT_URL: ${{ vars.VITE_APPS_SCRIPT_URL }}
+          VITE_RECAPTCHA_SITE_KEY: ${{ vars.VITE_RECAPTCHA_SITE_KEY }}
+          VITE_GA_MEASUREMENT_ID: ${{ vars.VITE_GA_MEASUREMENT_ID }}
+
+      - name: Check the built site (links, metadata, sitemap)
+        run: npm run check
+        env:
+          BASE_PATH: ${{ steps.target.outputs.base }}
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
