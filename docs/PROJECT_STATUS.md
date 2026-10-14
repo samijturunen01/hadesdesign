@@ -43,8 +43,11 @@ Chosen 2026-10-14. (The multi-agent creative panel in the first session never re
 
 - Cookie banner and Google Analytics removed 2026-10-14 (GA4 needs prior consent under Finnish law, and the owner wants no banner). The site's own code sets no cookies and uses no localStorage/sessionStorage. Only third-party script: reCAPTCHA v3, lazy-loaded on first focus of the contact form (it then sets `_GRECAPTCHA` on www.google.com, 180 days, and `_grecaptcha` in our localStorage – verified in headless Chrome), treated as necessary for the requested service and disclosed in the privacy policy (FI/EN). Residual risk: some EU regulators consider reCAPTCHA consent-requiring because Google also uses the data for its own purposes – if the owner wants zero risk, replace it with a consent-free alternative (decision pending, nothing changed yet).
 
+- Launch prep 2026-10-14 (owner authorised the production migration): pre-flight QA green (lint, typecheck, build, `npm run check` 48 pages/0 errors; headless Chrome on all 24 routes + legacy redirect + 404 at 1440/390 px – no console errors, failed requests, overflow or broken images; fonts load; mobile menu works). Backend health `{ok:true}`, fake token rejected. Repo `samijturunen01/hadesdesign` created (public), Pages = GitHub Actions, `redesign` fast-forwarded into `main` (796ac2c), preview deployed and re-checked at https://samijturunen01.github.io/hadesdesign/.
+
 ## Remaining
 
+- [ ] **Blocked on owner:** Zoner zone export, Cloudflare access (zone + API token or dashboard), name-server change at Zoner, GitHub account domain verification – see the cut-over request in the 2026-10-14 session / `docs/DEPLOYMENT.md` §5–7.
 - [ ] Owner review of the design on a GitHub Pages preview (`docs/DEPLOYMENT.md` §3).
 - [ ] Lighthouse run on the preview (mobile), fix anything below ~90.
 - [ ] Owner actions: confirm the two 2026-10-14 `TEST`/`TESTIVIESTI` emails arrived at contact.hadesdesign@gmail.com (check spam); review privacy policy; confirm items in `docs/CONTENT-SOURCES.md`.

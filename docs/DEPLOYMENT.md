@@ -17,6 +17,17 @@ current site keeps running until you perform the cut-over in step 5.
 >
 > The domain stays registered at Zoner. Only the **name servers** move to Cloudflare,
 > and email stays at Zoner (its MX/SPF records are copied as they are).
+>
+> **Rollback snapshot (14 Oct 2026, 17:15 UTC):** SOA `ns1.zoner.fi hostmaster.hadesdesign.fi`
+> serial `2025111500`, every record TTL 3600. No AAAA, `_dmarc`, `imap`, `webmail`,
+> `autodiscover`/`autoconfig` or common DKIM selectors (`default`, `google`, `zoner`, `selector1`)
+> exist publicly. Zoner refuses zone transfers, so this list is **not** proof of completeness –
+> the Zoner control panel export is the authoritative copy.
+>
+> **Progress (14 Oct 2026):** repository [`samijturunen01/hadesdesign`](https://github.com/samijturunen01/hadesdesign)
+> created (public), Pages source = GitHub Actions, `redesign` merged into `main` and the noindex
+> preview deployed to https://samijturunen01.github.io/hadesdesign/. Steps 2–3 below are done;
+> DNS (steps 5–7) is untouched.
 
 ---
 
