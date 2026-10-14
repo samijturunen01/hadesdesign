@@ -4,7 +4,7 @@ Read this first when resuming work. Keep it short and current.
 
 ## Rules that never change
 
-- Work happens on the `redesign` branch. **Never push to `main`, change DNS, or publish to hadesdesign.fi without the owner's explicit approval.** The old site stays online until then.
+- Work happens on the `redesign` branch; pushing to `main` deploys to production. **Never push to `main`, change DNS or name servers without the owner's explicit approval.** DNS lives in Cloudflare (dashboard only, owner makes the changes); the registrar is Domainhotelli, never Zoner.
 - Never invent facts (clients, projects, prices, numbers, testimonials). All facts live in `src/data/` and come from the previous site.
 - Finnish is primary (`/`), English secondary (`/en`).
 
@@ -30,7 +30,7 @@ Chosen 2026-10-14. (The multi-agent creative panel in the first session never re
 ## Done
 
 - Infrastructure scaffold, data layer, SEO, prerender, legacy redirects (commit d3fe155).
-- Apps Script backend + docs (`apps-script/`), deploy workflow, `docs/DEPLOYMENT.md` (GitHub Pages preview → Cloudflare DNS → cut-over, with rollback).
+- Apps Script backend + docs (`apps-script/`), deploy workflow, `docs/DEPLOYMENT.md` (Domainhotelli → Cloudflare DNS → GitHub Pages, with rollback).
 - `scripts/generate-assets.mjs`: responsive work images, favicons/icons/manifest, brand mark, OG images (headless Chrome).
 - Design system (`src/styles/`), fonts, header (services menu, mobile sheet, FI/EN switch), footer.
 - WebGL2 hero (`src/pages/home/emberField.ts`) with CSS fallback; reveals, cursor spotlight, tilt, magnetic buttons (`src/lib/interactions.ts`); view transitions.
@@ -45,13 +45,15 @@ Chosen 2026-10-14. (The multi-agent creative panel in the first session never re
 
 - Launch prep 2026-10-14 (owner authorised the production migration): pre-flight QA green (lint, typecheck, build, `npm run check` 48 pages/0 errors; headless Chrome on all 24 routes + legacy redirect + 404 at 1440/390 px – no console errors, failed requests, overflow or broken images; fonts load; mobile menu works). Backend health `{ok:true}`, fake token rejected. Repo `samijturunen01/hadesdesign` created (public), Pages = GitHub Actions, `redesign` fast-forwarded into `main` (796ac2c), preview deployed and re-checked at https://samijturunen01.github.io/hadesdesign/.
 
+- Production migration 2026-10-14 (owner-authorised). Corrected infrastructure: **Domainhotelli (registrar) → Cloudflare Free (DNS only, managed by hand in the dashboard, no API token) → GitHub Pages**. Zoner is neither registrar nor DNS; no email hosting on the domain (no MX, no Email Routing). Pre-cut-over lookups (18:40 UTC): `.fi` registry still delegates to `ns1–3.zoner.fi`, old site `5.44.245.60`, DNSSEC off (no DS) – full snapshot in `docs/DEPLOYMENT.md`. Owner built the Cloudflare zone (GitHub A/AAAA, `www` CNAME, Google verification TXT, all DNS only). Done here: `CUSTOM_DOMAIN=hadesdesign.fi`, production deploy, Pages custom domain `hadesdesign.fi`; local production build `npm run check` 48 pages/0 errors, canonicals/sitemap/robots on `https://hadesdesign.fi`; backend health `{ok:true}`, fake token → `{ok:false,error:"recaptcha"}`. `docs/DEPLOYMENT.md` rewritten for this setup.
+
 ## Remaining
 
-- [ ] **Blocked on owner:** Zoner zone export, Cloudflare access (zone + API token or dashboard), name-server change at Zoner, GitHub account domain verification – see the cut-over request in the 2026-10-14 session / `docs/DEPLOYMENT.md` §5–7.
-- [ ] Owner review of the design on a GitHub Pages preview (`docs/DEPLOYMENT.md` §3).
-- [ ] Lighthouse run on the preview (mobile), fix anything below ~90.
-- [ ] Owner actions: confirm the two 2026-10-14 `TEST`/`TESTIVIESTI` emails arrived at contact.hadesdesign@gmail.com (check spam); review privacy policy; confirm items in `docs/CONTENT-SOURCES.md`.
-- [ ] Only after explicit approval: merge to `main`, DNS cut-over (`docs/DEPLOYMENT.md` §5–7).
+- [ ] Owner: Cloudflare **Continue to activation** → share the two assigned name servers → change name servers at Domainhotelli (`docs/DEPLOYMENT.md` §7) – only after final approval.
+- [ ] After Cloudflare is authoritative: GitHub account domain verification (TXT `_github-pages-challenge-samijturunen01`, §8), certificate + **Enforce HTTPS** (§9), full launch verification incl. one real contact form message (§10), Search Console sitemap.
+- [ ] Lighthouse run on production (mobile), fix anything below ~90.
+- [ ] Owner actions: review privacy policy; confirm items in `docs/CONTENT-SOURCES.md` (incl. the 100 % satisfaction figure and the Okkuva testimonial attribution).
+- [ ] Later: keep the Zoner hosting until the new site has run cleanly for a while (rollback, §Rollback); optional DNSSEC and `v=spf1 -all` / DMARC `p=reject` (§11).
 - Optional ideas: preselect the package in the contact form from pricing CTAs.
 
 ## QA tooling notes

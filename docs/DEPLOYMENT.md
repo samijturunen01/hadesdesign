@@ -1,33 +1,30 @@
 # Deployment guide – hadesdesign.fi
 
-This guide takes the new site from your computer to **https://hadesdesign.fi** with
-**GitHub Pages** as the host and **Cloudflare** as the DNS provider. Nothing here has
-been done for you: no repository was created, no DNS record was changed and the
-current site keeps running until you perform the cut-over in step 5.
+The new site runs on **GitHub Pages**. DNS is managed in **Cloudflare (Free, DNS only)** and the
+domain is registered at **Domainhotelli**:
 
-> **Current situation (checked 14 Oct 2026, read-only lookups)**
+```
+Domainhotelli (registrar: name servers) → Cloudflare (DNS zone) → GitHub Pages (website)
+```
+
+Zoner is no longer the registrar and is **not** used for DNS. No email is hosted on the domain
+(the contact form sends via Google Apps Script to a Gmail address), so the zone has no mail records
+and **Cloudflare Email Routing stays off**. Cloudflare is managed by hand in its dashboard – no API token.
+
+> **Situation before the cut-over (checked 14 Oct 2026, 18:40 UTC, public lookups)**
 >
-> | | Today |
+> | | |
 > |---|---|
-> | Website | Hosted at **Zoner** (`5.44.245.60`, nginx) |
-> | DNS | **Zoner** name servers `ns1/ns2/ns3.zoner.fi` – *not Cloudflare yet* |
-> | Email | **Zoner** – MX `mailscanner01.zoner.fi` and `mailscanner02.zoner.fi` (priority 10), SPF `v=spf1 include:spf.zoner.fi -all` |
-> | Other records | `google-site-verification=VcPJQWUweCzJEOCCW2rE_agpN-kjvOPlntZVUxSvijc` (TXT), `www`, `mail`, `smtp`, `pop`, `ftp` → `5.44.245.60` |
-> | DNSSEC / CAA | none |
+> | Registrar | **Domainhotelli** (transfer completed 13 Oct 2026; `.fi` registry "last changed" 2026-10-13) |
+> | Authoritative name servers | still **`ns1.zoner.fi`, `ns2.zoner.fi`, `ns3.zoner.fi`** at the `.fi` registry – the transfer did not change them |
+> | Website | old site on Zoner hosting, `5.44.245.60` (nginx, no HSTS) |
+> | Records Zoner still serves | `A @` and `A www` → `5.44.245.60`; `mail`, `smtp`, `pop`, `ftp` → `5.44.245.60`; MX `mailscanner01/02.zoner.fi` (10); TXT `v=spf1 include:spf.zoner.fi -all`; TXT `google-site-verification=VcPJQWUweCzJEOCCW2rE_agpN-kjvOPlntZVUxSvijc` |
+> | SOA | `ns1.zoner.fi hostmaster.hadesdesign.fi`, serial `2025111500`, record TTL 3600 |
+> | DNSSEC | **off** – no DS record at the `.fi` registry, no DNSKEY in the zone |
+> | CAA | none |
 >
-> The domain stays registered at Zoner. Only the **name servers** move to Cloudflare,
-> and email stays at Zoner (its MX/SPF records are copied as they are).
->
-> **Rollback snapshot (14 Oct 2026, 17:15 UTC):** SOA `ns1.zoner.fi hostmaster.hadesdesign.fi`
-> serial `2025111500`, every record TTL 3600. No AAAA, `_dmarc`, `imap`, `webmail`,
-> `autodiscover`/`autoconfig` or common DKIM selectors (`default`, `google`, `zoner`, `selector1`)
-> exist publicly. Zoner refuses zone transfers, so this list is **not** proof of completeness –
-> the Zoner control panel export is the authoritative copy.
->
-> **Progress (14 Oct 2026):** repository [`samijturunen01/hadesdesign`](https://github.com/samijturunen01/hadesdesign)
-> created (public), Pages source = GitHub Actions, `redesign` merged into `main` and the noindex
-> preview deployed to https://samijturunen01.github.io/hadesdesign/. Steps 2–3 below are done;
-> DNS (steps 5–7) is untouched.
+> Because the domain has left Zoner, Zoner may stop serving the zone at any time. Until the name
+> servers point to Cloudflare, the website depends on that.
 
 ---
 
@@ -45,29 +42,25 @@ npm run lint        # ESLint (incl. accessibility rules)
 ```
 
 Copy `.env.example` to `.env` to try the contact form locally (see section 4).
+In Git Bash, set `MSYS_NO_PATHCONV=1` before passing `BASE_PATH=/` – otherwise Bash rewrites it
+to `C:/Program Files/Git/` and `npm run check` reports hundreds of false broken links.
 
-## 2. Create the GitHub repository
+## 2. GitHub repository
 
-1. On GitHub, create a new repository, e.g. **`samijturunen01/hadesdesign`**.
-   GitHub Pages on a free account requires a **public** repository (private repositories need GitHub Pro).
-   Do not add a README or licence – the project already has them.
-2. Push both branches:
-   ```bash
-   git remote add origin https://github.com/samijturunen01/hadesdesign.git
-   git push -u origin main        # production branch (only an initial commit until you merge)
-   git push -u origin redesign    # the new website
-   ```
-3. **Settings → Pages → Build and deployment → Source: “GitHub Actions”.**
-4. **Settings → Secrets and variables → Actions → Variables** – add when ready:
+Repository [`samijturunen01/hadesdesign`](https://github.com/samijturunen01/hadesdesign) (public –
+GitHub Pages on a free account requires it). Production branch: **`main`**; work happens on `redesign`.
 
-   | Variable | Value | When |
-   |---|---|---|
-   | `VITE_APPS_SCRIPT_URL` | optional – defaults to the deployed web app (`apps-script/site.json` → `webAppUrl`) | only to override |
-   | `VITE_RECAPTCHA_SITE_KEY` | optional – defaults to the site key in `apps-script/site.json` | only to override |
-   | `CUSTOM_DOMAIN` | `hadesdesign.fi` | **only at cut-over (step 5)** |
+- **Settings → Pages → Build and deployment → Source: “GitHub Actions”.**
+- **Settings → Secrets and variables → Actions → Variables:**
 
-   These are public values (they end up in the browser), so *variables* – not secrets – are correct.
-   The reCAPTCHA **secret** and the receiving email address never go to GitHub.
+  | Variable | Value | Status |
+  |---|---|---|
+  | `CUSTOM_DOMAIN` | `hadesdesign.fi` | **set 14 Oct 2026** – production build |
+  | `VITE_APPS_SCRIPT_URL` | optional – defaults to the deployed web app (`apps-script/site.json` → `webAppUrl`) | unset (only to override) |
+  | `VITE_RECAPTCHA_SITE_KEY` | optional – defaults to the site key in `apps-script/site.json` | unset (only to override) |
+
+  These are public values (they end up in the browser), so *variables* – not secrets – are correct.
+  The reCAPTCHA **secret** and the receiving email address never go to GitHub.
 
 ### Workflows
 
@@ -76,22 +69,17 @@ Copy `.env.example` to `.env` to try the contact form locally (see section 4).
 - **Deploy** (`.github/workflows/deploy.yml`) – every push to **`main`** and manual runs
   (Actions → *Deploy to GitHub Pages* → *Run workflow*). Merging into `main` = deploying.
 
-## 3. Preview on GitHub Pages (before touching DNS)
+## 3. Preview builds
 
-While the `CUSTOM_DOMAIN` variable is **unset**, the deploy workflow builds a
-**preview**: served from `https://samijturunen01.github.io/hadesdesign/`, with
-`noindex` on every page and a `Disallow: /` robots.txt so search engines ignore it.
+While `CUSTOM_DOMAIN` is **unset**, the deploy workflow builds a **preview** served from
+`https://samijturunen01.github.io/hadesdesign/` (base path `/hadesdesign/`, `noindex` on every page,
+`Disallow: /` in robots.txt, no CNAME file). That is how the site was reviewed before launch.
+To get a preview again you would have to unset the variable **and** remove the custom domain in
+Settings → Pages, which takes the production site down – so for later changes, review locally
+(`npm run build && npm run preview`) instead.
 
-To publish a preview:
-1. Merge `redesign` into `main` (pull request on GitHub, or locally `git checkout main && git merge redesign && git push`).
-   *This is the step that publishes – only do it when you want the preview online.*
-2. Watch **Actions → Deploy to GitHub Pages**. The deploy job prints the preview URL.
-
-Leave **Settings → Pages → Custom domain empty** during the preview – once a custom domain
-is set, GitHub redirects the `github.io` address to it (which would still be the old site).
-
-> The contact form works on the preview: `samijturunen01.github.io` is an allowed domain of the
-> reCAPTCHA key **and** in `allowedHostnames` in `apps-script/Site.js` (section 4).
+> `samijturunen01.github.io` stays an allowed domain of the reCAPTCHA key and in
+> `allowedHostnames` in `apps-script/Site.js` (section 4).
 
 ## 4. Contact form backend (Google Apps Script)
 
@@ -100,84 +88,84 @@ is set, GitHub redirects the `github.io` address to it (which would still be the
 site key from `src/config/site.ts` (defaults) or `VITE_APPS_SCRIPT_URL` / `VITE_RECAPTCHA_SITE_KEY`,
 so no repository variables are required. If the URL or key were ever missing, the form shows a
 “form not active – email or call us” error on submit and never pretends to send.
+Allowed domains: `hadesdesign.fi` (covers `www.`), `samijturunen01.github.io`, `localhost`.
 
-## 5. Move DNS to Cloudflare (website and email keep working)
+## 5. Cloudflare DNS zone (dashboard, done by the owner)
 
-Do this whenever convenient – it changes nothing for visitors as long as the records are copied exactly.
+Cloudflare → **Add a domain → `hadesdesign.fi` → Free plan**. The zone must contain exactly:
 
-1. **Export the current zone from Zoner first** (Zoner control panel → the domain's DNS settings).
-   Save a copy or screenshots of every record. Lookups found the records listed at the top, but
-   some records (for example DKIM keys) cannot be discovered from outside.
-2. In Cloudflare: **Add a domain → `hadesdesign.fi` → Free plan.** Cloudflare scans and imports records.
-3. **Compare the imported records with the Zoner export** and fix any differences:
+| Type | Name | Content | Proxy status |
+|---|---|---|---|
+| A | `@` | `185.199.108.153` | **DNS only** (grey cloud) |
+| A | `@` | `185.199.109.153` | DNS only |
+| A | `@` | `185.199.110.153` | DNS only |
+| A | `@` | `185.199.111.153` | DNS only |
+| AAAA | `@` | `2606:50c0:8000::153` | DNS only |
+| AAAA | `@` | `2606:50c0:8001::153` | DNS only |
+| AAAA | `@` | `2606:50c0:8002::153` | DNS only |
+| AAAA | `@` | `2606:50c0:8003::153` | DNS only |
+| CNAME | `www` | `samijturunen01.github.io` | DNS only |
+| TXT | `@` | `google-site-verification=VcPJQWUweCzJEOCCW2rE_agpN-kjvOPlntZVUxSvijc` | – |
+| TXT | `_github-pages-challenge-samijturunen01` | code from GitHub (step 8) | – |
 
-   | Type | Name | Content | Proxy status |
-   |---|---|---|---|
-   | A | `@` | `5.44.245.60` | **DNS only** (grey cloud) |
-   | A | `www` | `5.44.245.60` | **DNS only** |
-   | A | `mail` | `5.44.245.60` | **DNS only** – mail must never be proxied |
-   | A | `smtp` | `5.44.245.60` | **DNS only** |
-   | A | `pop` | `5.44.245.60` | **DNS only** |
-   | A | `ftp` | `5.44.245.60` | **DNS only** |
-   | MX | `@` | `mailscanner01.zoner.fi` (priority 10) | – |
-   | MX | `@` | `mailscanner02.zoner.fi` (priority 10) | – |
-   | TXT | `@` | `v=spf1 include:spf.zoner.fi -all` | – |
-   | TXT | `@` | `google-site-verification=VcPJQWUweCzJEOCCW2rE_agpN-kjvOPlntZVUxSvijc` | – |
-   | … | | anything else from the Zoner export | DNS only |
+Nothing else: no `A @`/`A www` → `5.44.245.60`, no `mail`/`smtp`/`pop`/`ftp`, no MX, no Zoner SPF.
+The Cloudflare records only go public once the name servers point to Cloudflare (step 7).
 
-   Keep everything **DNS only** for now so behaviour is identical to today.
-4. **Do not enable Cloudflare Email Routing.** It replaces the MX records and would take mail
-   away from Zoner.
-5. In Zoner's control panel, replace the name servers `ns1/ns2/ns3.zoner.fi` with the **two
-   Cloudflare name servers** shown in your Cloudflare dashboard. This only changes the name
-   servers – the domain stays registered at Zoner. `.fi` changes usually take effect within a
-   few hours (allow up to 48 h).
-6. When Cloudflare shows the domain as **Active**, check that https://hadesdesign.fi (still the
-   old site) and email (send and receive a test message) both work.
+## 6. GitHub Pages production configuration
 
-> Keep the Zoner hosting/email plan active – email is hosted there, and the old website stays
-> your rollback until the new one is confirmed.
+**Done 14 Oct 2026.**
 
-## 6. Verify the domain on GitHub (recommended, prevents domain takeover)
+1. Repository **Settings → Secrets and variables → Actions → Variables**: `CUSTOM_DOMAIN` = `hadesdesign.fi`.
+   With it the deploy workflow builds for `/` (Vite base path), indexable, with canonical URLs,
+   hreflang and `sitemap.xml` on `https://hadesdesign.fi`.
+2. **Actions → Deploy to GitHub Pages → Run workflow** (branch `main`) – or any push to `main`.
+3. Repository **Settings → Pages → Custom domain**: `hadesdesign.fi`. (`public/CNAME` holds the same
+   domain; with Actions-based publishing the setting is what counts.)
 
-1. GitHub → your **profile Settings → Pages → Add a domain** → `hadesdesign.fi`.
-2. GitHub shows a TXT record, e.g. name `_github-pages-challenge-samijturunen01`, value a random code.
-3. Add it in Cloudflare (TXT, name `_github-pages-challenge-samijturunen01`, DNS only) and click **Verify** on GitHub.
+From now on `https://samijturunen01.github.io/hadesdesign/` **redirects to `https://hadesdesign.fi/`**.
+That is expected – until the name servers change, that address still shows the old site. GitHub's DNS
+check and certificate stay pending until step 7.
 
-## 7. Cut-over: point hadesdesign.fi to GitHub Pages
+## 7. Change the name servers at Domainhotelli
 
-Only after you have approved the preview.
+Before: the Cloudflare zone matches step 5, the production deploy succeeded, and DNSSEC is off (it
+is – if a DS record ever existed it would have to be removed at the registrar first, or validating
+resolvers would reject Cloudflare's answers and the domain would stop resolving).
 
-1. Repository **Settings → Secrets and variables → Actions → Variables**: add `CUSTOM_DOMAIN` = `hadesdesign.fi`.
-2. **Actions → Deploy to GitHub Pages → Run workflow** (branch `main`). This production build is
-   served from `/`, indexable, with `sitemap.xml` and canonical URLs on `https://hadesdesign.fi`.
-3. Repository **Settings → Pages → Custom domain**: `hadesdesign.fi` → **Save**.
-   (The `public/CNAME` file contains the same domain; with Actions-based publishing GitHub uses
-   this setting, so the setting is what counts.)
-4. In **Cloudflare → DNS**, change only the website records (leave mail records untouched):
+1. Cloudflare → `hadesdesign.fi` → **Overview / Continue to activation**: copy the **two name servers
+   assigned to this zone** (`<name>.ns.cloudflare.com`).
+2. Domainhotelli → sign in → **Domains → hadesdesign.fi → Name servers** (Nimipalvelimet).
+3. Replace `ns1.zoner.fi`, `ns2.zoner.fi`, `ns3.zoner.fi` with the two Cloudflare name servers;
+   leave no Zoner name server and no empty field behind. Save.
+4. Cloudflare → **Check nameservers**. `.fi` changes usually take effect within an hour or a few
+   (allow up to 24–48 h). Check with `nslookup -type=NS hadesdesign.fi 8.8.8.8` or
+   `https://dns.google/resolve?name=hadesdesign.fi&type=NS`. Cloudflare emails when the zone is **Active**.
 
-   | Type | Name | Content | Proxy status |
-   |---|---|---|---|
-   | A | `@` | `185.199.108.153` | DNS only |
-   | A | `@` | `185.199.109.153` | DNS only |
-   | A | `@` | `185.199.110.153` | DNS only |
-   | A | `@` | `185.199.111.153` | DNS only |
-   | AAAA | `@` | `2606:50c0:8000::153` | DNS only |
-   | AAAA | `@` | `2606:50c0:8001::153` | DNS only |
-   | AAAA | `@` | `2606:50c0:8002::153` | DNS only |
-   | AAAA | `@` | `2606:50c0:8003::153` | DNS only |
-   | CNAME | `www` | `samijturunen01.github.io` | DNS only |
+## 8. Verify the domain on GitHub (prevents domain takeover)
 
-   Delete the old `A @ 5.44.245.60` and `A www 5.44.245.60` records (a name cannot have both a
-   CNAME and an A record). `mail`, `smtp`, `pop`, `ftp`, MX and TXT records stay exactly as they are.
-5. Wait until **Settings → Pages** shows the DNS check as successful and the certificate is issued
-   (usually minutes, sometimes a few hours), then tick **Enforce HTTPS**.
-6. Verify:
-   - https://hadesdesign.fi and https://www.hadesdesign.fi (redirects to the apex)
-   - an old address such as https://hadesdesign.fi/services → redirects to `/palvelut`
-   - https://hadesdesign.fi/sitemap.xml and /robots.txt
-   - send one real message through the contact form
-7. Google Search Console (already verified via the TXT record): submit `https://hadesdesign.fi/sitemap.xml`.
+GitHub checks public DNS, so this works only once Cloudflare is authoritative.
+
+1. GitHub → **profile Settings → Pages → Add a domain** → `hadesdesign.fi`.
+2. GitHub shows a TXT record: name `_github-pages-challenge-samijturunen01`, value a random code.
+3. Cloudflare → **DNS → Records → Add record**: Type TXT, Name `_github-pages-challenge-samijturunen01`,
+   Content = the code → Save. Back on GitHub click **Verify** (retry after a few minutes if needed).
+   Keep the record – GitHub re-checks it.
+
+## 9. HTTPS
+
+Wait until repository **Settings → Pages** shows *DNS check successful* and the certificate is issued
+(usually minutes, sometimes an hour or more), then tick **Enforce HTTPS**. If the certificate stays
+pending for hours, remove the custom domain, save, and add it again to restart provisioning.
+
+## 10. Verify the launch
+
+- https://hadesdesign.fi (new site, valid certificate), http:// → https://
+- https://www.hadesdesign.fi and http://www.hadesdesign.fi → `https://hadesdesign.fi/`
+- an old address such as https://hadesdesign.fi/services → `/palvelut`
+- `/en`, every service, work, pricing, contact, privacy and terms page; direct loads and refreshes
+- https://hadesdesign.fi/sitemap.xml and /robots.txt (no `Disallow: /`, no `noindex`)
+- one real message through the contact form (arrives at contact.hadesdesign@gmail.com)
+- Google Search Console (verified by the TXT record): submit `https://hadesdesign.fi/sitemap.xml`
 
 ### Why “DNS only” (grey cloud)?
 
@@ -186,17 +174,30 @@ addresses when it checks the domain. Proxied (orange-cloud) records hide those a
 can block certificate issuance and renewal. GitHub Pages already serves the site through a CDN
 over HTTPS, so the proxy adds little. If you ever proxy the website records, set Cloudflare
 **SSL/TLS mode to “Full (strict)”** – never “Flexible”, which causes redirect loops with
-*Enforce HTTPS*. Mail records can never be proxied.
+*Enforce HTTPS*.
 
 ### Rollback
 
-Put back `A @ 5.44.245.60` and `A www 5.44.245.60` (removing the GitHub records and the `www`
-CNAME). The old site on Zoner answers again as soon as DNS caches expire. This works only
-while the Zoner hosting plan is active.
+Pick the smallest step that fixes the problem:
 
-## 8. After launch
+1. **A bad release** – revert the commit on `main` (or run *Deploy to GitHub Pages* from an older
+   commit). DNS stays as it is.
+2. **GitHub Pages itself fails** – in Cloudflare change the website records back to the old host
+   (`A @` and `A www` → `5.44.245.60`, DNS only; delete the GitHub A/AAAA records and the `www` CNAME).
+   Works only while the Zoner hosting plan still serves the old site.
+3. **Cloudflare fails** – at Domainhotelli set the name servers back to `ns1.zoner.fi`,
+   `ns2.zoner.fi`, `ns3.zoner.fi`. Works only while Zoner still serves the zone (snapshot at the top),
+   which is not guaranteed now that the domain has left Zoner.
+
+Check `curl -sI http://5.44.245.60 -H "Host: hadesdesign.fi"` before relying on 2 or 3. Do not
+cancel the Zoner plan until the new site has run without problems for a while.
+
+## 11. After launch
 
 - The previous site's contact-form script (an older Apps Script deployment) can be archived
   once the new form has delivered a real message.
 - Update `Viimeksi päivitetty` in the privacy policy if you launch in a later month.
-- Optional: enable DNSSEC in Cloudflare (then add the DS record at Zoner).
+- Optional: enable DNSSEC in Cloudflare (**DNS → Settings → DNSSEC**) and add the DS record it
+  shows at Domainhotelli.
+- Optional anti-spoofing, since the domain sends no email: TXT `@` `v=spf1 -all` and TXT `_dmarc`
+  `v=DMARC1; p=reject;`. (The contact form sends from Gmail, not from this domain, so it is unaffected.)
