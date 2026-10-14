@@ -1,0 +1,709 @@
+/* ---------- Smoked glass ---------- */
+.glass {
+  position: relative;
+  isolation: isolate;
+  background: var(--glass-sheen), var(--glass);
+  border: 1px solid var(--glass-edge);
+  border-radius: var(--r-m);
+  box-shadow: var(--shadow-1);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+  backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+}
+
+.glass--strong {
+  background: var(--glass-sheen), var(--glass-strong);
+}
+
+/* Cursor spotlight: --mx/--my are set by src/lib/interactions.ts */
+[data-spotlight] {
+  --mx: 50%;
+  --my: 0%;
+}
+
+[data-spotlight]::before,
+[data-spotlight]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--dur-2) var(--ease-out);
+}
+
+[data-spotlight]::before {
+  z-index: -1;
+  background: radial-gradient(22rem circle at var(--mx) var(--my), rgba(255, 122, 61, 0.13), transparent 60%);
+}
+
+/* A light edge that follows the cursor */
+[data-spotlight]::after {
+  padding: 1px;
+  background: radial-gradient(14rem circle at var(--mx) var(--my), rgba(255, 179, 107, 0.75), transparent 60%);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  [data-spotlight]:hover::before,
+  [data-spotlight]:hover::after {
+    opacity: 1;
+  }
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  --tx: 0px;
+  --ty: 0px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6em;
+  min-height: 3rem;
+  padding: 0.8rem 1.4rem;
+  border: 1px solid transparent;
+  border-radius: var(--r-pill);
+  font-weight: 650;
+  font-size: 1rem;
+  line-height: 1.1;
+  letter-spacing: 0.005em;
+  text-decoration: none;
+  cursor: pointer;
+  overflow: hidden;
+  isolation: isolate;
+  transform: translate3d(var(--tx), var(--ty), 0);
+  transition:
+    transform var(--dur-2) var(--ease-out),
+    box-shadow var(--dur-2) var(--ease-out),
+    background-color var(--dur-2) var(--ease-out),
+    border-color var(--dur-2) var(--ease-out);
+}
+
+.btn svg {
+  width: 1.1em;
+  height: 1.1em;
+  flex: none;
+  transition: transform var(--dur-2) var(--ease-out);
+}
+
+.btn:hover svg {
+  transform: translateX(3px);
+}
+
+.btn--primary {
+  background: var(--grad-ember);
+  color: var(--ember-ink);
+  box-shadow: 0 10px 30px -12px rgba(255, 106, 43, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+/* A slow sheen that sweeps across on hover */
+.btn--primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.55) 50%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform 900ms var(--ease-out);
+}
+
+.btn--primary:hover {
+  box-shadow: var(--glow-ember), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+.btn--primary:hover::after {
+  transform: translateX(120%);
+}
+
+.btn--ghost {
+  background: rgba(236, 232, 242, 0.04);
+  border-color: var(--glass-edge-strong);
+  color: var(--ink);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.btn--ghost:hover {
+  background: rgba(236, 232, 242, 0.09);
+  border-color: rgba(255, 179, 107, 0.5);
+}
+
+.btn--sm {
+  min-height: 2.5rem;
+  padding: 0.55rem 1.05rem;
+  font-size: 0.94rem;
+}
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+/* Text link with an ember underline that draws in */
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  font-weight: 600;
+  text-decoration: none;
+  background: linear-gradient(var(--ember), var(--ember)) 0 100% / 0 1px no-repeat;
+  transition: background-size var(--dur-2) var(--ease-out), color var(--dur-2);
+}
+
+.link:hover {
+  background-size: 100% 1px;
+  color: var(--ember-2);
+}
+
+.link svg {
+  width: 1em;
+  height: 1em;
+  transition: transform var(--dur-2) var(--ease-out);
+}
+
+.link:hover svg {
+  transform: translateX(3px);
+}
+
+/* ---------- Typography helpers ---------- */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-size: var(--step--2);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ember-2);
+}
+
+.eyebrow::before {
+  content: '';
+  width: 1.75rem;
+  height: 1px;
+  background: var(--grad-ember);
+  box-shadow: 0 0 10px rgba(255, 122, 61, 0.8);
+}
+
+.lead {
+  font-size: var(--step-1);
+  line-height: 1.6;
+  color: var(--ink-2);
+  max-width: var(--max-text);
+}
+
+.muted {
+  color: var(--ink-2);
+}
+
+.h-display {
+  font-size: var(--step-5);
+  line-height: 1;
+  letter-spacing: -0.028em;
+}
+
+.h-1 {
+  font-size: var(--step-4);
+}
+
+.h-2 {
+  font-size: var(--step-3);
+}
+
+.h-3 {
+  font-size: var(--step-2);
+  font-family: var(--font-display);
+  font-weight: 450;
+  letter-spacing: -0.012em;
+}
+
+.section-head {
+  display: grid;
+  gap: 1.1rem;
+  max-width: 46rem;
+  margin-bottom: clamp(2.5rem, 2rem + 2vw, 4rem);
+}
+
+.section-head--split {
+  max-width: none;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: end;
+}
+
+@media (min-width: 60rem) {
+  .section-head--split {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    column-gap: 4rem;
+  }
+
+  .section-head--split > .lead {
+    justify-self: end;
+  }
+}
+
+/* ---------- Page header (inner pages) ---------- */
+.page-hero {
+  position: relative;
+  padding-top: calc(var(--header-h) + clamp(3rem, 2rem + 6vw, 7rem));
+  padding-bottom: clamp(3rem, 2rem + 4vw, 5.5rem);
+  overflow: hidden;
+}
+
+/* The ember horizon: a glowing line with heat haze under every page title */
+.page-hero::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: min(120%, 90rem);
+  height: 12rem;
+  transform: translateX(-50%);
+  background:
+    radial-gradient(50% 100% at 50% 100%, rgba(255, 106, 43, 0.22), transparent 70%),
+    linear-gradient(90deg, transparent, rgba(255, 138, 76, 0.7), transparent) 50% 100% / 70% 1px no-repeat;
+  pointer-events: none;
+}
+
+.page-hero__inner {
+  display: grid;
+  gap: 1.4rem;
+  max-width: 54rem;
+}
+
+.page-hero h1 {
+  font-size: var(--step-5);
+  line-height: 1.02;
+  letter-spacing: -0.028em;
+}
+
+.breadcrumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  list-style: none;
+  font-size: var(--step--1);
+  color: var(--ink-3);
+}
+
+.breadcrumbs li + li::before {
+  content: '/';
+  margin-right: 0.4rem;
+  opacity: 0.6;
+}
+
+.breadcrumbs a {
+  text-decoration: none;
+}
+
+.breadcrumbs a:hover {
+  color: var(--ink);
+}
+
+.breadcrumbs [aria-current] {
+  color: var(--ink-2);
+}
+
+/* ---------- Chips & badges ---------- */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.8rem;
+  border: 1px solid var(--glass-edge);
+  border-radius: var(--r-pill);
+  background: rgba(236, 232, 242, 0.04);
+  font-size: var(--step--1);
+  font-weight: 600;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+.chip--ember {
+  border-color: rgba(255, 138, 76, 0.4);
+  background: rgba(255, 122, 61, 0.1);
+  color: var(--ember-2);
+}
+
+.dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--ember);
+  box-shadow: 0 0 10px var(--ember);
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+}
+
+/* ---------- Lists ---------- */
+.check-list {
+  display: grid;
+  gap: 0.75rem;
+  list-style: none;
+}
+
+.check-list li {
+  display: grid;
+  grid-template-columns: 1.4rem 1fr;
+  gap: 0.75rem;
+  align-items: start;
+  color: var(--ink-2);
+}
+
+.check-list svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: 0.2rem;
+  color: var(--ember);
+}
+
+/* ---------- Cards ---------- */
+.card {
+  padding: clamp(1.4rem, 1.1rem + 1.2vw, 2.2rem);
+  border-radius: var(--r-l);
+  transition:
+    transform var(--dur-2) var(--ease-out),
+    border-color var(--dur-2) var(--ease-out);
+}
+
+.card h3 {
+  font-size: var(--step-1);
+}
+
+.card p {
+  color: var(--ink-2);
+}
+
+.card-index {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--step-2);
+  color: var(--ember-2);
+  line-height: 1;
+}
+
+.grid {
+  display: grid;
+  gap: clamp(0.9rem, 0.6rem + 1vw, 1.5rem);
+}
+
+@media (min-width: 40rem) {
+  .grid--2,
+  .grid--4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 62rem) {
+  .grid--3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .grid--4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* ---------- Icon tile: a small obsidian facet with an ember core ---------- */
+.facet {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at 50% 120%, rgba(255, 122, 61, 0.45), transparent 65%),
+    linear-gradient(150deg, #2a2435, #110f17);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  color: var(--ember-2);
+}
+
+.facet svg {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+
+/* ---------- FAQ ---------- */
+.faq {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.faq details {
+  border-radius: var(--r-m);
+  overflow: hidden;
+}
+
+.faq summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.15rem 1.4rem;
+  font-weight: 650;
+  font-size: var(--step-1);
+  line-height: 1.35;
+  cursor: pointer;
+  list-style: none;
+}
+
+.faq summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq summary .plus {
+  position: relative;
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: 1px solid var(--glass-edge-strong);
+  transition: transform var(--dur-2) var(--ease-out), background-color var(--dur-2);
+}
+
+.faq summary .plus::before,
+.faq summary .plus::after {
+  content: '';
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: 0.75rem;
+  height: 1.5px;
+  background: currentColor;
+  transform: translate(-50%, -50%);
+}
+
+.faq summary .plus::after {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.faq details[open] summary .plus {
+  transform: rotate(45deg);
+  background: rgba(255, 122, 61, 0.18);
+  border-color: rgba(255, 138, 76, 0.5);
+}
+
+.faq .answer {
+  padding: 0 1.4rem 1.3rem;
+  color: var(--ink-2);
+  max-width: 48rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .faq details::details-content {
+    block-size: 0;
+    overflow: hidden;
+    transition:
+      block-size var(--dur-2) var(--ease-out),
+      content-visibility var(--dur-2) allow-discrete;
+  }
+
+  .faq details[open]::details-content {
+    block-size: auto;
+  }
+
+  @supports (interpolate-size: allow-keywords) {
+    .faq {
+      interpolate-size: allow-keywords;
+    }
+  }
+}
+
+/* ---------- CTA band ---------- */
+.cta-band {
+  position: relative;
+  display: grid;
+  gap: 1.75rem;
+  padding: clamp(2rem, 1.2rem + 4vw, 4.5rem);
+  border-radius: calc(var(--r-l) + 6px);
+  overflow: hidden;
+  background:
+    radial-gradient(70% 120% at 100% 120%, rgba(255, 106, 43, 0.38), transparent 60%),
+    radial-gradient(50% 90% at 0% -20%, rgba(165, 139, 255, 0.16), transparent 60%),
+    var(--glass-sheen),
+    var(--glass-strong);
+}
+
+.cta-band h2 {
+  font-size: var(--step-4);
+  max-width: 18ch;
+}
+
+@media (min-width: 56rem) {
+  .cta-band {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    align-items: end;
+  }
+}
+
+.contact-lines {
+  display: grid;
+  gap: 0.6rem;
+  list-style: none;
+}
+
+.contact-lines a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.contact-lines a:hover {
+  color: var(--ember-2);
+}
+
+.contact-lines svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  color: var(--ember);
+  flex: none;
+}
+
+/* ---------- Forms ---------- */
+.field {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.field label {
+  font-weight: 600;
+  font-size: var(--step--1);
+  color: var(--ink-2);
+}
+
+.field .optional {
+  font-weight: 400;
+  color: var(--ink-3);
+}
+
+.input {
+  width: 100%;
+  min-height: 3.1rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--glass-edge-strong);
+  border-radius: var(--r-s);
+  background: rgba(6, 5, 9, 0.55);
+  color: var(--ink);
+  transition: border-color var(--dur-1), box-shadow var(--dur-1), background-color var(--dur-1);
+}
+
+.input::placeholder {
+  color: var(--ink-3);
+}
+
+.input:hover {
+  border-color: rgba(236, 232, 242, 0.3);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--ember);
+  background: rgba(6, 5, 9, 0.8);
+  box-shadow: 0 0 0 4px rgba(255, 122, 61, 0.18);
+}
+
+.input[aria-invalid='true'] {
+  border-color: var(--danger);
+}
+
+textarea.input {
+  min-height: 9rem;
+  resize: vertical;
+  line-height: 1.55;
+}
+
+select.input {
+  appearance: none;
+  padding-right: 2.5rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%23ffb36b' stroke-width='1.6'%3E%3Cpath d='m1 1.5 5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+}
+
+select.input option {
+  background: #16131d;
+  color: var(--ink);
+}
+
+.field-error {
+  font-size: var(--step--1);
+  color: var(--danger);
+}
+
+.field-hint {
+  font-size: var(--step--2);
+  color: var(--ink-3);
+}
+
+.alert {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.8rem;
+  padding: 1rem 1.2rem;
+  border-radius: var(--r-s);
+  border: 1px solid;
+}
+
+.alert svg {
+  width: 1.3rem;
+  height: 1.3rem;
+  margin-top: 0.15rem;
+}
+
+.alert--error {
+  border-color: rgba(255, 143, 143, 0.4);
+  background: rgba(255, 143, 143, 0.08);
+}
+
+.alert--info {
+  border-color: rgba(255, 179, 107, 0.35);
+  background: rgba(255, 122, 61, 0.07);
+}
+
+/* ---------- Prose (legal pages) ---------- */
+.prose {
+  max-width: 46rem;
+  color: var(--ink-2);
+}
+
+.prose h2 {
+  margin-top: 2.8rem;
+  margin-bottom: 0.9rem;
+  font-size: var(--step-2);
+  color: var(--ink);
+}
+
+.prose p + p,
+.prose p + ul,
+.prose ul + p {
+  margin-top: 0.9rem;
+}
+
+.prose ul {
+  display: grid;
+  gap: 0.45rem;
+  padding-left: 1.2rem;
+}
+
+.prose li::marker {
+  color: var(--ember);
+}
+
+.prose a {
+  color: var(--ember-2);
+}
+
+.contact-lines a {
+  overflow-wrap: anywhere;
+}

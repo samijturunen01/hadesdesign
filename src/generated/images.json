@@ -1,0 +1,56 @@
+{
+  "kuljetus-jumppanen-desktop": {
+    "width": 2880,
+    "height": 1800,
+    "widths": [
+      640,
+      960,
+      1440,
+      1920
+    ]
+  },
+  "kuljetus-jumppanen-mobile": {
+    "width": 1170,
+    "height": 2532,
+    "widths": [
+      390,
+      780
+    ]
+  },
+  "okkuva-desktop": {
+    "width": 2880,
+    "height": 1800,
+    "widths": [
+      640,
+      960,
+      1440,
+      1920
+    ]
+  },
+  "okkuva-mobile": {
+    "width": 1170,
+    "height": 2532,
+    "widths": [
+      390,
+      780
+    ]
+  },
+  "pielisen-lumo-desktop": {
+    "width": 2880,
+    "height": 1800,
+    "widths": [
+      640,
+      960,
+      1440,
+      1920
+    ]
+  },
+  "pielisen-lumo-mobile": {
+    "width": 1170,
+    "height": 2532,
+    "widths": [
+      390,
+      780
+    ]
+  }
+}

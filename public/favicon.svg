@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><defs>
+  <linearGradient id="g-body" x1="8" y1="2" x2="24" y2="30" gradientUnits="userSpaceOnUse">
+    <stop offset="0" stop-color="#2b2537"/><stop offset=".55" stop-color="#121018"/><stop offset="1" stop-color="#1c1214"/>
+  </linearGradient>
+  <linearGradient id="g-rim" x1="16" y1="1" x2="16" y2="31" gradientUnits="userSpaceOnUse">
+    <stop offset="0" stop-color="#c7b6ff"/><stop offset=".5" stop-color="#5b4a86"/><stop offset="1" stop-color="#ff8a4c"/>
+  </linearGradient>
+  <linearGradient id="g-ember" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#ff6a2b"/><stop offset="1" stop-color="#ffc07a"/>
+  </linearGradient></defs>
+  <path d="M16 1.5 28.5 8.75v14.5L16 30.5 3.5 23.25V8.75Z" fill="url(#g-body)" stroke="url(#g-rim)" stroke-width="1"/>
+  <path d="M16 1.5 3.5 8.75 16 16Z" fill="#fff" fill-opacity=".07"/>
+  <path d="M16 16 28.5 23.25 16 30.5Z" fill="#ff7a3d" fill-opacity=".1"/>
+  <path d="M9.6 9.4 13 8.4v15.2l-3.4-1Z" fill="#ece8f2"/>
+  <path d="M22.4 9.4 19 8.4v15.2l3.4-1Z" fill="#ece8f2"/>
+  <rect x="13" y="14.3" width="6" height="3.4" fill="url(#g-ember)"/></svg>

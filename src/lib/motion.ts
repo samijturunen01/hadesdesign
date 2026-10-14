@@ -1,4 +1,8 @@
 /** Motion helpers shared by components. All motion is optional enhancement. */
+import type { CSSProperties } from 'react'
+
+/** Stagger index for [data-reveal] and .intro children (style="--i: n"). */
+export const stagger = (i: number) => ({ '--i': i }) as CSSProperties
 
 export function prefersReducedMotion(): boolean {
   return typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches

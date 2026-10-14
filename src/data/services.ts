@@ -110,8 +110,8 @@ export const services: Service[] = [
       en: 'Updates, security, backups and hosting – we handle the technology, you focus on your business.',
     },
     description: {
-      fi: 'Kaikki verkkosivupaketit sisältävät 60 päivän tuen julkaisun jälkeen bugikorjauksiin ja teknisiin ongelmiin. Jatkuva ylläpito ja hosting ovat saatavilla kuukausi- tai vuosisopimuksella.',
-      en: 'Every website package includes 60 days of post-launch support for bug fixes and technical issues. Ongoing maintenance and hosting are available on a monthly or yearly plan.',
+      fi: 'Julkaisun jälkeinen tekninen tuki ja ylläpito ovat saatavilla erillisinä maksullisina palveluina. Jatkuva ylläpito ja hosting hoituvat kuukausi- tai vuosisopimuksella.',
+      en: 'Post-launch technical support and maintenance are available as separately paid services, with ongoing maintenance and hosting on a monthly or yearly plan.',
     },
     benefits: {
       fi: [

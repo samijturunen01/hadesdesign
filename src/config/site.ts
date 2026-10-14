@@ -8,16 +8,14 @@ const env = import.meta.env
 const clean = (value: string | undefined) => (value ?? '').trim()
 const trimSlash = (value: string) => value.replace(/\/+$/, '')
 
-/** The GA4 property used by the previous site, kept so reporting continues. */
-const DEFAULT_GA_ID = 'G-62L4BW8BGX'
-
-function resolveGaId(): string {
-  const value = clean(env.VITE_GA_MEASUREMENT_ID)
-  if (value.toLowerCase() === 'off') return ''
-  if (value) return value
-  // Unset: production builds keep analytics, local development does not.
-  return env.PROD ? DEFAULT_GA_ID : ''
-}
+/**
+ * Contact form backend (apps-script/site.json). Both values are public – they
+ * end up in the built JavaScript anyway; the reCAPTCHA secret lives only in
+ * the Apps Script project's Script properties. Env variables override them.
+ */
+const DEFAULT_APPS_SCRIPT_URL =
+  'https://script.google.com/macros/s/AKfycbymDvm-kHB0jJZu6flHpQkQHyA7TYyDaLa4_4F6rzCO4n8sS1JJwWW_YNxqRZ0ZYglbGg/exec'
+const DEFAULT_RECAPTCHA_SITE_KEY = '6LeDOe8tAAAAALxEemkEodBWofp8-vQ0o4oyPTgY'
 
 export const config = {
   /** Production origin without a trailing slash. */
@@ -25,13 +23,11 @@ export const config = {
   /** Vite base path – always starts and ends with "/". */
   basePath: env.BASE_URL || '/',
   /** Google Apps Script web app endpoint of the contact form. */
-  appsScriptUrl: clean(env.VITE_APPS_SCRIPT_URL),
+  appsScriptUrl: clean(env.VITE_APPS_SCRIPT_URL) || DEFAULT_APPS_SCRIPT_URL,
   /** reCAPTCHA v3 site key (public). */
-  recaptchaSiteKey: clean(env.VITE_RECAPTCHA_SITE_KEY),
+  recaptchaSiteKey: clean(env.VITE_RECAPTCHA_SITE_KEY) || DEFAULT_RECAPTCHA_SITE_KEY,
   /** Must match `recaptchaAction` in apps-script/Site.js. */
   recaptchaAction: 'contact',
-  /** GA4 measurement ID, empty when analytics is disabled. */
-  gaMeasurementId: resolveGaId(),
   /** Preview/staging builds must never be indexed. */
   noindex: clean(env.VITE_NOINDEX) === 'true',
 } as const

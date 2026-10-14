@@ -1,0 +1,22 @@
+{
+  "name": "Hades Design",
+  "project": "verkkosivut-recaptcha",
+  "siteKey": "6LeDOe8tAAAAALxEemkEodBWofp8-vQ0o4oyPTgY",
+  "domains": [
+    "hadesdesign.fi",
+    "samijturunen01.github.io",
+    "localhost"
+  ],
+  "recaptchaAction": "contact",
+  "scriptId": "1cy2nsmMkVx8acfjWXIJiYBarrKe1msEBU2vuXBMhaLOMX0ttgfLaTbJA",
+  "fields": [
+    "name",
+    "email",
+    "phone",
+    "company",
+    "message"
+  ],
+  "deploymentId": "AKfycbymDvm-kHB0jJZu6flHpQkQHyA7TYyDaLa4_4F6rzCO4n8sS1JJwWW_YNxqRZ0ZYglbGg",
+  "webAppUrl": "https://script.google.com/macros/s/AKfycbymDvm-kHB0jJZu6flHpQkQHyA7TYyDaLa4_4F6rzCO4n8sS1JJwWW_YNxqRZ0ZYglbGg/exec",
+  "version": 1
+}

@@ -86,12 +86,12 @@ export const pageMeta: Record<PageId | 'notFound', Localized<PageMeta>> = {
     fi: {
       title: 'Referenssit',
       description:
-        'Hades Designin toteuttamia verkkosivustoja: Pielisen Lumo Kulttuuriseura ry:n matkailu- ja kulttuurisivusto sekä rap-artisti Shadyn artistisivusto.',
+        'Hades Designin toteuttamia verkkosivustoja: Pielisen Lumon matkailu- ja kulttuurisivusto, lyhytvideopalvelu Okkuva ja joensuulainen Kuljetus Jumppanen Oy.',
     },
     en: {
       title: 'Our work',
       description:
-        'Websites built by Hades Design: a tourism and culture site for Pielisen Lumo Kulttuuriseura ry and an artist website for Finnish rapper Shady.',
+        'Websites built by Hades Design: Pielisen Lumo (tourism & culture), Okkuva (short-form video) and Kuljetus Jumppanen Oy (freight transport, Joensuu).',
     },
   },
   pricing: {

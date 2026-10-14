@@ -9,7 +9,6 @@ export type FeatureId =
   | 'design'
   | 'development'
   | 'mobile'
-  | 'support'
   | 'seo'
   | 'ssl'
   | 'speed'
@@ -24,7 +23,6 @@ export const FEATURES: Record<FeatureId, Localized> = {
   design: { fi: 'Web-suunnittelu', en: 'Web design' },
   development: { fi: 'Web-kehitys', en: 'Web development' },
   mobile: { fi: 'Mobiilioptimointi', en: 'Mobile optimisation' },
-  support: { fi: 'Ylläpito ja tuki 60 päivää julkaisun jälkeen', en: 'Maintenance & support for 60 days after launch' },
   seo: { fi: 'Hakukoneoptimointi (SEO)', en: 'Search engine optimisation (SEO)' },
   ssl: { fi: 'SSL-suojaus', en: 'SSL security' },
   speed: { fi: 'Nopea latausaika', en: 'Fast loading times' },
@@ -41,7 +39,6 @@ export const FEATURE_ORDER: FeatureId[] = [
   'design',
   'development',
   'mobile',
-  'support',
   'seo',
   'ssl',
   'speed',
@@ -80,7 +77,7 @@ export const packages: WebsitePackage[] = [
       en: 'An easy, cost-effective solution for small websites.',
     },
     timeline: { fi: '1–2 viikkoa', en: '1–2 weeks' },
-    included: ['design', 'development', 'mobile', 'support', 'seo', 'ssl', 'speed', 'contactForm'],
+    included: ['design', 'development', 'mobile', 'seo', 'ssl', 'speed', 'contactForm'],
     popular: false,
   },
   {
@@ -93,7 +90,7 @@ export const packages: WebsitePackage[] = [
       en: 'Everything you need for a successful website.',
     },
     timeline: { fi: '2–3 viikkoa', en: '2–3 weeks' },
-    included: ['design', 'development', 'mobile', 'support', 'seo', 'ssl', 'speed', 'contactForm', 'extraPages'],
+    included: ['design', 'development', 'mobile', 'seo', 'ssl', 'speed', 'contactForm', 'extraPages'],
     popular: true,
   },
   {
@@ -109,7 +106,6 @@ export const packages: WebsitePackage[] = [
     included: [
       'development',
       'mobile',
-      'support',
       'seo',
       'ssl',
       'speed',

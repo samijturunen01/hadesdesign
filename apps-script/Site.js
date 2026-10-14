@@ -11,10 +11,11 @@ var SITE = {
   minScore: 0.5,
   /**
    * Hostnames a reCAPTCHA token may come from. Subdomains are included, so
-   * 'hadesdesign.fi' also covers www.hadesdesign.fi. For a preview on GitHub
-   * Pages add 'samijturunen01.github.io' (here AND to the reCAPTCHA key).
+   * 'hadesdesign.fi' also covers www.hadesdesign.fi. The GitHub Pages preview
+   * and localhost are allowed for testing – keep this list identical to the
+   * reCAPTCHA key's domains.
    */
-  allowedHostnames: ['hadesdesign.fi'],
+  allowedHostnames: ['hadesdesign.fi', 'samijturunen01.github.io', 'localhost'],
   /** Accent colour for the long-text blocks in the email. */
   accentColor: '#ff6a3d',
   /**

@@ -36,7 +36,7 @@ const abs = (p) => `${siteUrl}/${p.replace(/^\/+/, '')}`
 
 // Preload the Latin subsets of the brand fonts so headlines render without a swap.
 const assetsDir = path.join(dist, 'assets')
-const PRELOAD_FONTS = [/latin-wght-normal.*\.woff2$/]
+const PRELOAD_FONTS = [/^fraunces-latin-opsz-normal.*\.woff2$/, /^hanken-grotesk-latin-wght-normal.*\.woff2$/]
 const fontPreloads = existsSync(assetsDir)
   ? readdirSync(assetsDir)
       .filter((file) => PRELOAD_FONTS.some((re) => re.test(file)) && !/latin-ext/.test(file))

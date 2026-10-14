@@ -136,8 +136,8 @@ export const approach: TitledText[] = [
   {
     title: { fi: 'Julkaise ja tue', en: 'Launch & support' },
     text: {
-      fi: 'Varmistamme sujuvan julkaisun ja tuemme sinua myös sen jälkeen, jotta menestyt pitkällä aikavälillä.',
-      en: 'We make sure the launch goes smoothly and keep supporting you afterwards, so you succeed in the long run.',
+      fi: 'Varmistamme sujuvan julkaisun. Halutessasi jatkamme yhteistyötä ylläpitosopimuksella, jotta menestyt pitkällä aikavälillä.',
+      en: 'We make sure the launch goes smoothly. If you wish, we keep working together on a maintenance plan, so you succeed in the long run.',
     },
   },
 ]
@@ -163,10 +163,10 @@ export const pricingFaq: Faq[] = [
     },
   },
   {
-    q: { fi: 'Mitä tukijaksoon sisältyy?', en: 'What does the support period include?' },
+    q: { fi: 'Sisältyykö julkaisun jälkeinen tuki pakettiin?', en: 'Is post-launch support included in the package?' },
     a: {
-      fi: 'Tuki sisältää bugikorjaukset, pienet sisältöpäivitykset, teknisen avun ja tietoturvapäivitykset. Lisätukea voi ostaa tukijakson jälkeen.',
-      en: 'Support covers bug fixes, small content updates, technical help and security updates. Additional support can be purchased after the initial period.',
+      fi: 'Julkaisun jälkeinen tekninen tuki ja ylläpito ovat saatavilla erillisinä maksullisina palveluina. Ylläpito ja hosting -paketti maksaa 40 €/kk tai 360 €/vuosi.',
+      en: 'Post-launch technical support and maintenance are available as separately paid services. The maintenance & hosting plan costs €40/month or €360/year.',
     },
   },
   {
@@ -230,12 +230,16 @@ export const maintenanceFaq: Faq[] = [
   },
 ]
 
-/** The only client testimonial published on the previous site. */
+/**
+ * The only client testimonial published on the previous site. Quote text is verbatim –
+ * do not edit. Attribution moved from Shady to Okkuva on the owner's request (2026-10-14).
+ */
 export const testimonial = {
   quote: {
     fi: 'Suosittelen Hadesta jokaiselle, joka haluaa tyylikkäät nettisivut. Laatu, luovuus ja yksityiskohtien huomiointi on aivan omaa luokkaansa.',
     en: 'I recommend Hades to everyone who wants a stylish website. The quality, creativity and attention to detail are on another level.',
   } satisfies Localized,
-  author: 'Shady',
-  role: { fi: 'Musiikin tuottaja ja rap-artisti', en: 'Music producer & rapper' } satisfies Localized,
+  /** Must equal the project's `client` so the Work page shows the quote under that project. */
+  author: 'Okkuva',
+  role: { fi: 'Lyhytvideoita yrityksille', en: 'Short-form video for businesses' } satisfies Localized,
 } as const

@@ -9,7 +9,6 @@
 #                            from https://<user>.github.io/<repo>/.
 #   VITE_APPS_SCRIPT_URL     contact form web app URL (apps-script/README.md)
 #   VITE_RECAPTCHA_SITE_KEY  reCAPTCHA v3 site key (public)
-#   VITE_GA_MEASUREMENT_ID   optional – GA4 ID, or "off"
 name: Deploy to GitHub Pages
 
 on:
@@ -64,12 +63,17 @@ jobs:
           VITE_SITE_URL: https://hadesdesign.fi
           VITE_APPS_SCRIPT_URL: ${{ vars.VITE_APPS_SCRIPT_URL }}
           VITE_RECAPTCHA_SITE_KEY: ${{ vars.VITE_RECAPTCHA_SITE_KEY }}
-          VITE_GA_MEASUREMENT_ID: ${{ vars.VITE_GA_MEASUREMENT_ID }}
 
       - name: Check the built site (links, metadata, sitemap)
         run: npm run check
         env:
           BASE_PATH: ${{ steps.target.outputs.base }}
+
+      # Actions-based Pages deployments take the domain from Settings → Pages, but a
+      # preview should never even carry the production CNAME file.
+      - name: Remove CNAME from preview builds
+        if: ${{ vars.CUSTOM_DOMAIN == '' }}
+        run: rm -f dist/CNAME
 
       - uses: actions/upload-pages-artifact@v5
         with:

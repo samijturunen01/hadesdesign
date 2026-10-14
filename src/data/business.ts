@@ -33,8 +33,6 @@ export const business = {
     fi: 'Vastaamme yleensä kaikkiin tiedusteluihin 24 tunnin kuluessa arkipäivisin. Voit myös soittaa suoraan.',
     en: 'We usually reply to every enquiry within 24 hours on business days. You can also call us directly.',
   } satisfies Localized,
-  /** Post-launch support included in every website package. */
-  includedSupportDays: 60,
 } as const
 
 export const story: Localized<string[]> = {
