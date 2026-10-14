@@ -47,12 +47,26 @@ Chosen 2026-10-14. (The multi-agent creative panel in the first session never re
 
 - Production migration 2026-10-14 (owner-authorised). Corrected infrastructure: **Domainhotelli (registrar) → Cloudflare Free (DNS only, managed by hand in the dashboard, no API token) → GitHub Pages**. Zoner is neither registrar nor DNS; no email hosting on the domain (no MX, no Email Routing). Pre-cut-over lookups (18:40 UTC): `.fi` registry still delegates to `ns1–3.zoner.fi`, old site `5.44.245.60`, DNSSEC off (no DS) – full snapshot in `docs/DEPLOYMENT.md`. Owner built the Cloudflare zone (GitHub A/AAAA, `www` CNAME, Google verification TXT, all DNS only). Done here: `CUSTOM_DOMAIN=hadesdesign.fi`, production deploy, Pages custom domain `hadesdesign.fi`; local production build `npm run check` 48 pages/0 errors, canonicals/sitemap/robots on `https://hadesdesign.fi`; backend health `{ok:true}`, fake token → `{ok:false,error:"recaptcha"}`. `docs/DEPLOYMENT.md` rewritten for this setup.
 
+- Cut-over started 2026-10-14 (paused by the owner at 19:05 UTC):
+  - Cloudflare zone checked from the owner's screenshot – exactly 10 records: 4× A, 4× AAAA (GitHub), CNAME `www` → `samijturunen01.github.io`, TXT google-site-verification; all DNS only, no MX/mail/old `5.44.245.60` records.
+  - Assigned Cloudflare name servers: **`carter.ns.cloudflare.com`, `nelci.ns.cloudflare.com`** – queried directly, both already answer with the correct records.
+  - Owner gave final approval and confirmed the 100 % satisfaction figure and the Okkuva testimonial attribution as they are.
+  - Owner **saved the name-server change at Domainhotelli** (~18:55 UTC). At 19:05 UTC the `.fi` registry (`nslookup -type=NS hadesdesign.fi a.fi`) still listed `ns1–3.zoner.fi` – propagation from Domainhotelli to Traficom pending. Public DNS still served the old site.
+  - Pages API state: `cname: hadesdesign.fi`, `https_enforced: false` (re-enabled after the certificate), `protected_domain_state: null` (account domain not verified yet).
+  - No background monitoring is running.
+
 ## Remaining
 
-- [ ] Owner: Cloudflare **Continue to activation** → share the two assigned name servers → change name servers at Domainhotelli (`docs/DEPLOYMENT.md` §7) – only after final approval.
-- [ ] After Cloudflare is authoritative: GitHub account domain verification (TXT `_github-pages-challenge-samijturunen01`, §8), certificate + **Enforce HTTPS** (§9), full launch verification incl. one real contact form message (§10), Search Console sitemap.
+Resume here – one step at a time, owner performs every dashboard action:
+
+- [ ] **1. Check delegation:** `nslookup -type=NS hadesdesign.fi a.fi` and `https://dns.google/resolve?name=hadesdesign.fi&type=NS` must show `carter`/`nelci.ns.cloudflare.com`. If still Zoner after ~24 h: ask the owner to check the domain page at Domainhotelli (saved values, pending/error state) and, if needed, contact Domainhotelli support. Cloudflare shows **Active** (owner may click *Check nameservers*).
+- [ ] **2. Resolution:** `A hadesdesign.fi` → `185.199.108–111.153`, `www` → `samijturunen01.github.io`; `http://hadesdesign.fi` shows the new site (title "Hades Design – Verkkosivut ja verkkokaupat yrityksille").
+- [ ] **3. GitHub domain verification** (§8): owner → profile Settings → Pages → Add a domain `hadesdesign.fi` → adds TXT `_github-pages-challenge-samijturunen01` in Cloudflare → Verify. Never invent the code.
+- [ ] **4. HTTPS** (§9): wait for the certificate (`gh api repos/samijturunen01/hadesdesign/pages`), then enable Enforce HTTPS (`gh api -X PUT repos/samijturunen01/hadesdesign/pages -F https_enforced=true`). If stuck for hours, re-save the custom domain.
+- [ ] **5. Launch verification** (§10): all FI/EN pages, desktop/mobile, direct loads, http→https, www→apex, legacy redirects, sitemap/robots/canonicals, no redirect loops or cert errors; one real contact form message – owner confirms receipt at contact.hadesdesign@gmail.com.
+- [ ] **6.** Search Console: submit `https://hadesdesign.fi/sitemap.xml`. Update this file and `docs/DEPLOYMENT.md` (mark §7–10 done).
 - [ ] Lighthouse run on production (mobile), fix anything below ~90.
-- [ ] Owner actions: review privacy policy; confirm items in `docs/CONTENT-SOURCES.md` (incl. the 100 % satisfaction figure and the Okkuva testimonial attribution).
+- [ ] Owner actions: review privacy policy; confirm remaining items in `docs/CONTENT-SOURCES.md`.
 - [ ] Later: keep the Zoner hosting until the new site has run cleanly for a while (rollback, §Rollback); optional DNSSEC and `v=spf1 -all` / DMARC `p=reject` (§11).
 - Optional ideas: preselect the package in the contact form from pricing CTAs.
 
