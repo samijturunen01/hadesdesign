@@ -32,7 +32,26 @@ const copy = {
 export function Hero() {
   const t = useT()
   const locale = useLocale()
+  const heroRef = useRef<HTMLElement>(null)
+  const copyRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+
+  // Stacked (mobile/tablet) layouts anchor the ember glow to the end of the copy,
+  // not to the bottom of the hero where the stage sits: --hero-fold is that line.
+  useEffect(() => {
+    const hero = heroRef.current
+    const copy = copyRef.current
+    if (!hero || !copy) return
+    const update = () => {
+      const fold = copy.getBoundingClientRect().bottom - hero.getBoundingClientRect().top
+      hero.style.setProperty('--hero-fold', `${Math.round(fold)}px`)
+    }
+    update()
+    const observer = new ResizeObserver(update)
+    observer.observe(hero)
+    observer.observe(copy)
+    return () => observer.disconnect()
+  }, [])
 
   // The WebGL field is progressive enhancement, loaded once the page is idle.
   useEffect(() => {
@@ -45,9 +64,11 @@ export function Hero() {
       void import('./emberField').then(({ startEmberField }) => {
         if (cancelled) return
         const small = window.innerWidth < 720
+        const stacked = window.matchMedia('(max-width: 61.99rem)').matches
         stop = startEmberField(canvas, {
           still: prefersReducedMotion(),
           scale: small ? 0.35 : 0.5,
+          origin: stacked ? [0.5, 0.2] : undefined,
           onReady: () => canvas.classList.add('is-live'),
         })
       })
@@ -60,12 +81,12 @@ export function Hero() {
   }, [])
 
   return (
-    <section className="hero" data-tilt="" aria-labelledby="hero-title">
+    <section ref={heroRef} className="hero" data-tilt="" aria-labelledby="hero-title">
       <canvas ref={canvasRef} className="hero__canvas" aria-hidden="true" />
       <div className="hero__veil" aria-hidden="true" />
 
       <div className="container hero__grid">
-        <div className="hero__copy intro">
+        <div ref={copyRef} className="hero__copy intro">
           <p className="eyebrow" style={stagger(0)}>
             {t(copy.eyebrow)}
           </p>

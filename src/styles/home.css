@@ -260,14 +260,89 @@
   }
 }
 
+/* Stacked layouts: the copy comes first and the stage sits below it, so the ember
+   field is anchored to the end of the copy (--hero-fold, set in Hero.tsx) instead
+   of the bottom of the hero – otherwise it would burn only behind the stage. */
+@media (max-width: 61.99rem) {
+  .hero::before {
+    background:
+      radial-gradient(95% 26rem at 50% var(--hero-fold, 100svh), rgba(255, 106, 43, 0.34), transparent 70%),
+      radial-gradient(55% 12rem at 50% var(--hero-fold, 100svh), rgba(255, 192, 122, 0.16), transparent 70%),
+      radial-gradient(90% 28rem at 8% -6%, rgba(165, 139, 255, 0.18), transparent 70%),
+      var(--bg);
+  }
+
+  .hero__canvas {
+    bottom: auto;
+    height: calc(var(--hero-fold, 100svh) + 6rem);
+    -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 12rem), transparent);
+    mask-image: linear-gradient(180deg, #000 calc(100% - 12rem), transparent);
+  }
+
+  .hero__veil {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(9, 8, 13, 0.8) 0,
+        rgba(9, 8, 13, 0.5) calc(var(--hero-fold, 100svh) * 0.55),
+        rgba(9, 8, 13, 0.62) calc(var(--hero-fold, 100svh) - 6rem),
+        rgba(9, 8, 13, 0.35) var(--hero-fold, 100svh),
+        transparent calc(var(--hero-fold, 100svh) + 4rem)
+      ),
+      linear-gradient(180deg, transparent 85%, var(--bg) 100%);
+  }
+
+  /* A calmer tilt keeps the floating chips inside the page margins */
+  .stage {
+    aspect-ratio: 1 / 0.94;
+    transform: rotateY(calc(var(--rx) * 4deg - 5deg)) rotateX(calc(var(--ry) * -3deg + 3deg));
+  }
+
+  .stage__browser {
+    top: 15%;
+    width: 86%;
+  }
+
+  .stage__phone {
+    right: 0;
+    bottom: 8%;
+    width: 28%;
+  }
+
+  .stage__chip--price {
+    left: 3%;
+    top: 1%;
+  }
+
+  /* Pinned to the browser's lower-left corner, below the screenshot */
+  .stage__chip--speed {
+    left: 6%;
+    bottom: 7%;
+  }
+}
+
 @media (max-width: 40rem) {
   .stage__chip {
     font-size: 0.75rem;
   }
 
-  /* Inset so the 3D tilt keeps the longer label inside the viewport */
-  .stage__chip--speed {
-    left: 9%;
+  /* Stats as aligned rows: three columns are too narrow for the labels */
+  .hero__facts {
+    display: grid;
+    gap: 0.8rem;
+    width: 100%;
+  }
+
+  .hero__facts li {
+    grid-template-columns: 5.2rem minmax(0, 1fr);
+    align-items: baseline;
+    gap: 1rem;
+    max-width: none;
+  }
+
+  /* The labels sit on the ember glow here */
+  .hero__facts span {
+    color: var(--ink-2);
   }
 }
 

@@ -78,6 +78,8 @@ export interface EmberFieldOptions {
   still?: boolean
   /** Fraction of device pixels to render (lower = faster). */
   scale?: number
+  /** Resting position of the heat hot spot (0…1 from the bottom-left) until the pointer moves. */
+  origin?: [number, number]
   onReady?: () => void
 }
 
@@ -121,7 +123,8 @@ export function startEmberField(canvas: HTMLCanvasElement, options: EmberFieldOp
   const uHeat = gl.getUniformLocation(program, 'uHeat')
 
   const scale = options.scale ?? 0.5
-  const mouse = { x: 0.72, y: 0.12, tx: 0.72, ty: 0.12 }
+  const [ox, oy] = options.origin ?? [0.72, 0.12]
+  const mouse = { x: ox, y: oy, tx: ox, ty: oy }
   let heat = options.still ? 1 : 0
   let frame = 0
   let visible = true
