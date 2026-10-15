@@ -77,7 +77,7 @@ Resume here – one step at a time, owner performs every dashboard action:
 - [x] **3. GitHub domain verification** – done (`protected_domain_state: verified`, checked 2026-10-15).
 - [x] **4. HTTPS** – done 2026-10-15 (see above).
 - [x] **5. Launch verification** – done 2026-10-15: automated checks (status codes, redirects, certificate, canonicals, sitemap, robots, 404) + owner's review of the pages and a delivered contact-form message.
-- [ ] **6.** Search Console (owner, no access from here): submit `https://hadesdesign.fi/sitemap.xml` (`docs/DEPLOYMENT.md` §10).
+- [x] **6. Search Console** – owner submitted `https://hadesdesign.fi/sitemap.xml` 2026-10-15.
 - [ ] Lighthouse run on production (mobile), fix anything below ~90.
 - [ ] Owner actions: review privacy policy; confirm remaining items in `docs/CONTENT-SOURCES.md`.
 - [ ] Later: keep the Zoner hosting until the new site has run cleanly for a while (rollback, §Rollback); optional DNSSEC and `v=spf1 -all` / DMARC `p=reject` (§11).
