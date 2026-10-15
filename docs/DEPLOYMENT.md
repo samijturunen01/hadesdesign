@@ -7,6 +7,11 @@ domain is registered at **Domainhotelli**:
 Domainhotelli (registrar: name servers) → Cloudflare (DNS zone) → GitHub Pages (website)
 ```
 
+> **Status: live since 15 Oct 2026.** https://hadesdesign.fi is served by GitHub Pages through
+> Cloudflare DNS (name servers `carter`/`nelci.ns.cloudflare.com`). The domain is verified on GitHub,
+> the Let's Encrypt certificate covers `hadesdesign.fi` and `www.hadesdesign.fi` (GitHub renews it),
+> and Enforce HTTPS is on. Steps 7–10 below are done and kept for reference.
+
 Zoner is no longer the registrar and is **not** used for DNS. No email is hosted on the domain
 (the contact form sends via Google Apps Script to a Gmail address), so the zone has no mail records
 and **Cloudflare Email Routing stays off**. Cloudflare is managed by hand in its dashboard – no API token.
@@ -128,6 +133,8 @@ check and certificate stay pending until step 7.
 
 ## 7. Change the name servers at Domainhotelli
 
+*Done 14 Oct 2026 – name servers `carter.ns.cloudflare.com`, `nelci.ns.cloudflare.com`; delegation visible ~21:20 UTC.*
+
 Before: the Cloudflare zone matches step 5, the production deploy succeeded, and DNSSEC is off (it
 is – if a DS record ever existed it would have to be removed at the registrar first, or validating
 resolvers would reject Cloudflare's answers and the domain would stop resolving).
@@ -143,6 +150,8 @@ resolvers would reject Cloudflare's answers and the domain would stop resolving)
 
 ## 8. Verify the domain on GitHub (prevents domain takeover)
 
+*Done – `protected_domain_state: verified` (checked 15 Oct 2026).*
+
 GitHub checks public DNS, so this works only once Cloudflare is authoritative.
 
 1. GitHub → **profile Settings → Pages → Add a domain** → `hadesdesign.fi`.
@@ -153,11 +162,16 @@ GitHub checks public DNS, so this works only once Cloudflare is authoritative.
 
 ## 9. HTTPS
 
+*Done 15 Oct 2026 – certificate approved (expires 12 Jan 2027, renewed automatically), Enforce HTTPS on.*
+
 Wait until repository **Settings → Pages** shows *DNS check successful* and the certificate is issued
 (usually minutes, sometimes an hour or more), then tick **Enforce HTTPS**. If the certificate stays
 pending for hours, remove the custom domain, save, and add it again to restart provisioning.
 
 ## 10. Verify the launch
+
+*Done 15 Oct 2026 – automated checks passed and the owner approved the live site and confirmed
+contact-form delivery. Search Console sitemap submission is done by the owner.*
 
 - https://hadesdesign.fi (new site, valid certificate), http:// → https://
 - https://www.hadesdesign.fi and http://www.hadesdesign.fi → `https://hadesdesign.fi/`

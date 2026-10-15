@@ -55,16 +55,29 @@ Chosen 2026-10-14. (The multi-agent creative panel in the first session never re
   - Pages API state: `cname: hadesdesign.fi`, `https_enforced: false` (re-enabled after the certificate), `protected_domain_state: null` (account domain not verified yet).
   - No background monitoring is running.
 
+- Cut-over resumed 2026-10-14 ~21:20 UTC:
+  - **Delegation done:** `.fi` registry (`a.fi`), 1.1.1.1 and 8.8.8.8 all return `carter`/`nelci.ns.cloudflare.com`. Cloudflare answers 4× A, 4× AAAA (GitHub), `www` CNAME → `samijturunen01.github.io`, Google TXT; no MX.
+  - **New site live over HTTP:** `http://hadesdesign.fi/` → 200 from GitHub.com, correct title; `http://www.` → 301 to apex. All 24 sitemap URLs 200 with correct canonical and no `noindex`; robots.txt `Allow: /` + sitemap; 404 works; legacy `/services` → `/palvelut`.
+  - HTTPS **not yet**: GitHub still presents `*.github.io` (`https_certificate: null`). Pages health: DNS points to Pages IPs, `is_https_eligible: true`, but `is_served_by_pages: false` (stale check). Custom domain re-saved via API (`PUT pages cname=hadesdesign.fi`, no removal) to trigger provisioning.
+  - Account domain verification still pending (`protected_domain_state: null`).
+
+- HTTPS live 2026-10-15 (owner turned on Enforce HTTPS in the GitHub dashboard):
+  - Pages API: `https_enforced: true`, certificate `approved` (Let's Encrypt, `hadesdesign.fi` + `www.hadesdesign.fi`, expires 2027-01-12, GitHub renews it automatically), `protected_domain_state: verified`.
+  - `http://` apex and `http://`/`https://www.` → 301 → `https://hadesdesign.fi/`; certificate verifies.
+  - All 24 sitemap URLs over HTTPS: 200, canonical = own URL, no `http://` src/href. Legacy `/services` → `/palvelut`; 404 returns 404; robots.txt correct.
+
+- **Production launch completed 2026-10-15.** Owner reviewed the live site (FI/EN, desktop/mobile) and approved it, and confirmed that a real contact-form message arrived at contact.hadesdesign@gmail.com.
+
 ## Remaining
 
 Resume here – one step at a time, owner performs every dashboard action:
 
-- [ ] **1. Check delegation:** `nslookup -type=NS hadesdesign.fi a.fi` and `https://dns.google/resolve?name=hadesdesign.fi&type=NS` must show `carter`/`nelci.ns.cloudflare.com`. If still Zoner after ~24 h: ask the owner to check the domain page at Domainhotelli (saved values, pending/error state) and, if needed, contact Domainhotelli support. Cloudflare shows **Active** (owner may click *Check nameservers*).
-- [ ] **2. Resolution:** `A hadesdesign.fi` → `185.199.108–111.153`, `www` → `samijturunen01.github.io`; `http://hadesdesign.fi` shows the new site (title "Hades Design – Verkkosivut ja verkkokaupat yrityksille").
-- [ ] **3. GitHub domain verification** (§8): owner → profile Settings → Pages → Add a domain `hadesdesign.fi` → adds TXT `_github-pages-challenge-samijturunen01` in Cloudflare → Verify. Never invent the code.
-- [ ] **4. HTTPS** (§9): wait for the certificate (`gh api repos/samijturunen01/hadesdesign/pages`), then enable Enforce HTTPS (`gh api -X PUT repos/samijturunen01/hadesdesign/pages -F https_enforced=true`). If stuck for hours, re-save the custom domain.
-- [ ] **5. Launch verification** (§10): all FI/EN pages, desktop/mobile, direct loads, http→https, www→apex, legacy redirects, sitemap/robots/canonicals, no redirect loops or cert errors; one real contact form message – owner confirms receipt at contact.hadesdesign@gmail.com.
-- [ ] **6.** Search Console: submit `https://hadesdesign.fi/sitemap.xml`. Update this file and `docs/DEPLOYMENT.md` (mark §7–10 done).
+- [x] **1. Check delegation** – done 2026-10-14 (see above).
+- [x] **2. Resolution** – done 2026-10-14 (see above).
+- [x] **3. GitHub domain verification** – done (`protected_domain_state: verified`, checked 2026-10-15).
+- [x] **4. HTTPS** – done 2026-10-15 (see above).
+- [x] **5. Launch verification** – done 2026-10-15: automated checks (status codes, redirects, certificate, canonicals, sitemap, robots, 404) + owner's review of the pages and a delivered contact-form message.
+- [ ] **6.** Search Console (owner, no access from here): submit `https://hadesdesign.fi/sitemap.xml` (`docs/DEPLOYMENT.md` §10).
 - [ ] Lighthouse run on production (mobile), fix anything below ~90.
 - [ ] Owner actions: review privacy policy; confirm remaining items in `docs/CONTENT-SOURCES.md`.
 - [ ] Later: keep the Zoner hosting until the new site has run cleanly for a while (rollback, §Rollback); optional DNSSEC and `v=spf1 -all` / DMARC `p=reject` (§11).
