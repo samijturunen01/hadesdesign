@@ -4,7 +4,7 @@ Read this first when resuming work. Keep it short and current.
 
 ## Rules that never change
 
-- Work happens on the `redesign` branch; pushing to `main` deploys to production. **Never push to `main`, change DNS or name servers without the owner's explicit approval.** DNS lives in Cloudflare (dashboard only, owner makes the changes); the registrar is Domainhotelli, never Zoner.
+- Work happens on a branch (`redesign`; the Conversion First redesign is on `conversion-first-redesign`); pushing to `main` deploys to production. **Never push to `main`, change DNS or name servers without the owner's explicit approval.** DNS lives in Cloudflare (dashboard only, owner makes the changes); the registrar is Domainhotelli, never Zoner.
 - Never invent facts (clients, projects, prices, numbers, testimonials). All facts live in `src/data/` and come from the previous site.
 - Finnish is primary (`/`), English secondary (`/en`).
 
@@ -13,7 +13,7 @@ Read this first when resuming work. Keep it short and current.
 - React 19 + Vite 8 + TypeScript, React Router 8 (declarative). Every route is prerendered to static HTML (`scripts/prerender.mjs`) for GitHub Pages; `scripts/check-dist.mjs` validates the output.
 - `src/routes.ts` – single source of truth for URLs (FI/EN), sitemap, legacy redirects.
 - `src/data/` – verified content. `src/seo/` – meta, hreflang, JSON-LD. `src/features/` – contact form (Apps Script + reCAPTCHA v3). No analytics, no cookie banner (see below).
-- `src/components/` – shared UI. `src/pages/` – one folder per page; the four service pages share `pages/service`.
+- `src/components/` – shared UI. `src/pages/` – one folder per page; the two service pages (websites, maintenance) share `pages/service`.
 - Page transitions: native View Transitions (`src/lib/useAppNavigate.ts`). Reveals: IntersectionObserver (`src/lib/useReveal.ts`). All motion respects `prefers-reduced-motion`.
 - Hero: hand-written WebGL2 shader, lazy-loaded progressive enhancement over a CSS fallback. The LCP element is the prerendered headline.
 - Images: `npm run assets` (`scripts/generate-assets.mjs`, sharp) turns `assets-src/` into responsive AVIF/WebP in `public/images/`, and draws favicons, brand mark and OG images from SVG.
@@ -72,6 +72,14 @@ Chosen 2026-10-14. (The multi-agent creative panel in the first session never re
   - **Backend compatibility:** the deployed Apps Script still validates the old `service` keys, so the form maps Hermes → `light`, Apollo/Zeus → `website` (`BACKEND_SERVICE` in `src/features/contact/fields.ts`) and the exact package travels in the message. `apps-script/Site.js` has new labels for those keys but was **not** redeployed – until it is, the email's "Kiinnostaa" line shows the old labels (the message itself is correct).
   - QA: lint, typecheck, `npm test`, build, `npm run check` (48 pages, 0 errors/warnings); headless Chrome at 1440/1024/768/390/360 – no overflow; keyboard-only calculator; reduced motion; production preview: hydration with `?package=` on contact and pricing pages, stubbed-network form submission payload.
 
+- **Conversion First redesign 2026-11-23 (owner's brief) – branch `conversion-first-redesign`, NOT merged or deployed; awaiting the owner's review.**
+  - **Services:** online stores (Verkkokaupat) and website redesign (Verkkosivujen uudistus) are no longer marketed as separate services. Their pages are gone from routes, navigation, footer, sitemap, meta and JSON-LD; `/palvelut/verkkokaupat`, `/palvelut/verkkosivujen-uudistus`, `/en/services/online-stores`, `/en/services/website-redesign` get static redirect pages to the website service in the same language (`LEGACY_REDIRECTS` with `locale`). Replacing an old site is still offered through the packages (FAQ "Minulla on jo verkkosivut…"). Portfolio unchanged.
+  - **Packages:** Hermes is positioned as equal in quality to Apollo – the only differences are one page vs. several pages and a simple vs. business-specific contact form (`specs` in `src/data/pricing.ts`, comparison group "Sama laatu kaikissa paketeissa"; unit tests enforce it). Zeus = Apollo + optional add-ons, CTA "Räätälöi Zeus". Comparison follows the brief's table with a marker key (Sisältyy / Tarpeen mukaan / valinnainen / Ei sisälly). New "Erot lyhyesti" block on the pricing page; trust strip (testimonial + real projects) before the FAQ; FAQ rewritten from verified policies only.
+  - **Home:** hero "Verkkosivut, jotka näyttävät hyvältä ja auttavat myymään." with CTAs "Katso verkkosivupaketit" / "Tutustu toteutuksiin"; then Conversion First, benefits, references + testimonial, package preview (Apollo raised), why Hades Design (verified facts), process, FAQ, CTA.
+  - **Contact form:** package choice as cards (Hermes, Apollo, Zeus, "En osaa vielä sanoa", Ylläpito ja hosting, Muu asia), Zeus add-on picker with language stepper and a live price summary; `?package=…` from the calculator/cards and `?package=unsure` preselect it. Payload unchanged (same keys; `unsure` → backend `other`), so the deployed Apps Script needs no redeploy. Double submits are blocked with a synchronous ref guard.
+  - **SEO:** new titles/descriptions aimed at "verkkosivut yritykselle", "verkkosivujen suunnittelu", "kotisivut yritykselle", Joensuu; OG images regenerated with "Suunniteltu näyttämään hyvältä. Rakennettu myymään."; production build keeps `Allow: /` and no `noindex` (only the 404 page).
+  - QA 2026-11-23: lint, typecheck, `npm test` (32 tests), build, `npm run check` (40 pages, 26 redirect files, 0 errors/warnings); headless Chrome over 21 routes × 1440/1024/390/360 px – no overflow, no console errors; axe-core WCAG 2.1 AA on 6 key pages × 2 widths – 0 violations; reduced motion – all content visible; scripted interaction test (50 checks): every calculator combination of the brief, card/CTA links, contact preselection for each package, validation, payload integrity with the Apps Script endpoint intercepted and reCAPTCHA stubbed (no real messages sent), double-submit guard, error + retry, all redirects, desktop and mobile navigation.
+
 ## Remaining
 
 Resume here – one step at a time, owner performs every dashboard action:
@@ -86,6 +94,7 @@ Resume here – one step at a time, owner performs every dashboard action:
 - [ ] Owner actions: review privacy policy; confirm remaining items in `docs/CONTENT-SOURCES.md`.
 - [ ] Later: keep the Zoner hosting until the new site has run cleanly for a while (rollback, §Rollback); optional DNSSEC and `v=spf1 -all` / DMARC `p=reject` (§11).
 - [ ] **Pricing (2026-11-23):** owner to confirm the items under *Not known* in `docs/CONTENT-SOURCES.md` (VAT on the new prices, delivery times, Apollo page count, translation scope) before merging to `main`; then optionally `deploy` the Apps Script so emails show the new package labels.
+- [ ] **Conversion First redesign:** owner reviews `conversion-first-redesign` locally (`npm run build && npx vite preview --port 4373`), confirms the items under *Needs confirmation – Conversion First redesign* in `docs/CONTENT-SOURCES.md`, then approves the merge to `main` (= production deploy). Nothing is merged or pushed before that.
 
 ## QA tooling notes
 
