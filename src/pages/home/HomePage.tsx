@@ -1,13 +1,15 @@
+import type { CSSProperties } from 'react'
+import { ConversionFirst } from '../../components/ConversionFirst'
 import { Icon, type IconName } from '../../components/Icon'
 import { Process } from '../../components/Process'
 import { ResponsiveImage } from '../../components/ResponsiveImage'
-import { ButtonLink, CtaBand, SectionHead } from '../../components/ui'
-import { pillars, pillarsIntro, testimonial } from '../../data/content'
 import { TierEmblem } from '../../components/pricing/TierEmblem'
-import { recommendedLabel } from '../../data/packages'
+import { ButtonLink, CtaBand, FaqList, SectionHead } from '../../components/ui'
+import { homeFaq, pillars, pillarsIntro, reasons, testimonial } from '../../data/content'
+import { ctaLabel } from '../../data/navigation'
+import { maintenancePlan, recommendedLabel, vatNote } from '../../data/packages'
 import { headlinePrice, tiers } from '../../data/pricing'
 import { projects } from '../../data/projects'
-import { services } from '../../data/services'
 import { formatEuro, useLocale, useT } from '../../i18n/locale'
 import { ui } from '../../i18n/strings'
 import { AppLink } from '../../lib/AppLink'
@@ -17,22 +19,45 @@ import { usePageSeo } from '../../seo/usePageSeo'
 import type { PageProps } from '../registry'
 import { Hero } from './Hero'
 
-const PILLAR_ICONS: IconName[] = ['bolt', 'shield', 'search', 'devices']
+const PILLAR_ICONS: IconName[] = ['spark', 'search', 'bolt', 'devices']
 
 const copy = {
-  servicesEyebrow: { fi: 'Palvelut', en: 'Services' },
-  servicesTitle: { fi: 'Verkkosivuista ylläpitoon –', en: 'From websites to maintenance –' },
-  servicesAccent: { fi: 'yhdestä paikasta.', en: 'all in one place.' },
-  servicesLead: {
-    fi: 'Suunnittelu, toteutus, uudistus ja ylläpito saman tekijän käsistä. Sinun ei tarvitse koordinoida useaa toimittajaa.',
-    en: 'Design, development, redesign and maintenance from the same hands. No need to coordinate several suppliers.',
+  cfEyebrow: { fi: 'Conversion First', en: 'Conversion First' },
+  cfTitle: { fi: 'Kaunis ulkoasu on', en: 'Good looks are' },
+  cfAccent: { fi: 'vasta alkua.', en: 'only the beginning.' },
+  cfLead: {
+    fi: 'Conversion First tarkoittaa, että suunnittelemme sivustosi asiakkaasi näkökulmasta: mitä hän etsii, mikä saa hänet luottamaan sinuun ja miten yhteydenotosta tulee vaivatonta. Jokainen ratkaisu rakenteesta otsikoihin ja painikkeisiin palvelee tätä polkua.',
+    en: 'Conversion First means we design your site from your customer’s point of view: what they are looking for, what makes them trust you and how getting in touch becomes effortless. Every decision, from structure to headlines and buttons, serves that path.',
   },
-  whyEyebrow: { fi: 'Miksi Hades Design', en: 'Why Hades Design' },
-  whyTitle: { fi: 'Sivut, jotka toimivat', en: 'Sites that work' },
-  whyAccent: { fi: 'yhtä hyvin kuin näyttävät.', en: 'as well as they look.' },
+  benefitsEyebrow: { fi: 'Mitä saat', en: 'What you get' },
+  benefitsTitle: { fi: 'Sivut, jotka toimivat', en: 'Sites that work' },
+  benefitsAccent: { fi: 'yhtä hyvin kuin näyttävät.', en: 'as well as they look.' },
   workEyebrow: { fi: 'Referenssit', en: 'Selected work' },
   workTitle: { fi: 'Projekteja, joista olemme', en: 'Work we are' },
   workAccent: { fi: 'ylpeitä.', en: 'proud of.' },
+  workLead: {
+    fi: 'Jokainen sivusto on suunniteltu asiakkaan liiketoiminnan ja asiakkaiden mukaan – katso, miltä se näyttää käytännössä.',
+    en: 'Every site is designed around the client’s business and customers – see what that looks like in practice.',
+  },
+  allWork: { fi: 'Katso kaikki referenssit', en: 'See all our work' },
+  quoteLabel: { fi: 'Asiakkaan sanoin', en: 'In a client’s words' },
+  pricingEyebrow: { fi: 'Verkkosivupaketit', en: 'Website packages' },
+  pricingTitle: { fi: 'Kolme pakettia,', en: 'Three packages,' },
+  pricingAccent: { fi: 'sama laatu.', en: 'one standard of quality.' },
+  pricingLead: {
+    fi: 'Jokainen paketti suunnitellaan samalla Conversion First -periaatteella ja premium-laadulla. Valitset vain laajuuden: yksi sivu, useita sivuja tai Apollo lisäominaisuuksilla.',
+    en: 'Every package is designed on the same Conversion First principle and to the same premium standard. You only choose the scope: one page, several pages or Apollo with add-ons.',
+  },
+  allAddons: { fi: 'kaikilla lisäominaisuuksilla', en: 'with every add-on' },
+  seePackage: { fi: 'Katso paketin sisältö', en: 'See what’s included' },
+  compare: { fi: 'Vertaa paketteja', en: 'Compare the packages' },
+  pricingNote: {
+    fi: `Kertahintoja. Ylläpito ja hosting halutessasi erikseen ${formatEuro(maintenancePlan.monthly, 'fi')}/kk.`,
+    en: `One-time prices. Maintenance and hosting separately if you wish, ${formatEuro(maintenancePlan.monthly, 'en')}/month.`,
+  },
+  whyEyebrow: { fi: 'Miksi Hades Design', en: 'Why Hades Design' },
+  whyTitle: { fi: 'Selkeä yhteistyö,', en: 'Clear to work with,' },
+  whyAccent: { fi: 'ei yllätyksiä.', en: 'no surprises.' },
   processEyebrow: { fi: 'Prosessi', en: 'Process' },
   processTitle: { fi: 'Näin projekti', en: 'How a project' },
   processAccent: { fi: 'etenee.', en: 'comes together.' },
@@ -40,15 +65,10 @@ const copy = {
     fi: 'Selkeä prosessi kartoituksesta julkaisuun. Tiedät koko ajan, missä mennään.',
     en: 'A clear process from discovery to launch. You always know where things stand.',
   },
-  pricingEyebrow: { fi: 'Hinnasto', en: 'Pricing' },
-  pricingTitle: { fi: 'Selkeät paketit,', en: 'Clear packages,' },
-  pricingAccent: { fi: 'selkeät hinnat.', en: 'clear prices.' },
-  pricingLead: {
-    fi: 'Hermes, Apollo ja Zeus – suunniteltu näyttämään hyvältä, rakennettu myymään. Hinnat sisältävät ALV:n.',
-    en: 'Hermes, Apollo and Zeus – designed to look good, built to sell. Prices include VAT.',
-  },
-  quoteLabel: { fi: 'Asiakkaan sanoin', en: 'In a client’s words' },
-  allAddons: { fi: 'kaikilla lisäosilla', en: 'with every add-on' },
+  faqEyebrow: { fi: 'Usein kysyttyä', en: 'FAQ' },
+  faqTitle: { fi: 'Ennen kuin', en: 'Before you' },
+  faqAccent: { fi: 'otat yhteyttä.', en: 'get in touch.' },
+  faqMore: { fi: 'Lisää kysymyksiä paketeista ja hinnoista', en: 'More questions about packages and pricing' },
 }
 
 export default function HomePage({ id }: PageProps) {
@@ -60,43 +80,29 @@ export default function HomePage({ id }: PageProps) {
     <>
       <Hero />
 
-      {/* Services – an editorial index */}
-      <section className="section" aria-labelledby="home-services">
+      {/* Conversion First – what it means */}
+      <section className="section" aria-labelledby="home-cf">
         <div className="container">
           <SectionHead
-            id="home-services"
-            eyebrow={t(copy.servicesEyebrow)}
-            title={t(copy.servicesTitle)}
-            accent={t(copy.servicesAccent)}
-            lead={t(copy.servicesLead)}
+            id="home-cf"
+            eyebrow={t(copy.cfEyebrow)}
+            title={t(copy.cfTitle)}
+            accent={t(copy.cfAccent)}
+            lead={t(copy.cfLead)}
             split
           />
-          <ol className="service-index">
-            {services.map((service, i) => (
-              <li key={service.id} data-reveal="" style={stagger(i)}>
-                <AppLink to={pathFor(service.id, locale)} className="service-row" data-spotlight="">
-                  <span className="service-row__no">0{i + 1}</span>
-                  <span className="service-row__name">{t(service.name)}</span>
-                  <span className="service-row__text">{t(service.summary)}</span>
-                  <span className="service-row__price">{service.price ? t(service.price) : t(ui.priceOnRequest)}</span>
-                  <span className="service-row__go" aria-hidden="true">
-                    <Icon name="arrowUpRight" />
-                  </span>
-                </AppLink>
-              </li>
-            ))}
-          </ol>
+          <ConversionFirst />
         </div>
       </section>
 
-      {/* Why – glass pillars over an ember stage */}
-      <section className="section why" aria-labelledby="home-why">
+      {/* Benefits – glass pillars over an ember stage */}
+      <section className="section why" aria-labelledby="home-benefits">
         <div className="container">
           <SectionHead
-            id="home-why"
-            eyebrow={t(copy.whyEyebrow)}
-            title={t(copy.whyTitle)}
-            accent={t(copy.whyAccent)}
+            id="home-benefits"
+            eyebrow={t(copy.benefitsEyebrow)}
+            title={t(copy.benefitsTitle)}
+            accent={t(copy.benefitsAccent)}
             lead={t(pillarsIntro)}
           />
           <div className="grid grid--4">
@@ -113,10 +119,17 @@ export default function HomePage({ id }: PageProps) {
         </div>
       </section>
 
-      {/* Work */}
+      {/* References, with the client's words right next to them */}
       <section className="section" aria-labelledby="home-work">
         <div className="container">
-          <SectionHead id="home-work" eyebrow={t(copy.workEyebrow)} title={t(copy.workTitle)} accent={t(copy.workAccent)} />
+          <SectionHead
+            id="home-work"
+            eyebrow={t(copy.workEyebrow)}
+            title={t(copy.workTitle)}
+            accent={t(copy.workAccent)}
+            lead={t(copy.workLead)}
+            split
+          />
           <div className="work-teasers">
             {projects.map((project, i) => (
               <AppLink
@@ -145,28 +158,8 @@ export default function HomePage({ id }: PageProps) {
               </AppLink>
             ))}
           </div>
-        </div>
-      </section>
 
-      {/* Process – a timeline whose ember line fills as you scroll */}
-      <section className="section" aria-labelledby="home-process">
-        <div className="container">
-          <SectionHead
-            id="home-process"
-            eyebrow={t(copy.processEyebrow)}
-            title={t(copy.processTitle)}
-            accent={t(copy.processAccent)}
-            lead={t(copy.processLead)}
-            split
-          />
-          <Process />
-        </div>
-      </section>
-
-      {/* Testimonial */}
-      <section className="section section--tight" aria-label={t(copy.quoteLabel)}>
-        <div className="container">
-          <figure className="testimonial glass" data-reveal="scale">
+          <figure className="testimonial glass home-quote" data-reveal="scale" aria-label={t(copy.quoteLabel)}>
             <Icon name="quote" className="testimonial__mark" />
             <blockquote>
               <p>{t(testimonial.quote)}</p>
@@ -176,10 +169,16 @@ export default function HomePage({ id }: PageProps) {
               <span>{t(testimonial.role)}</span>
             </figcaption>
           </figure>
+
+          <div className="btn-row section-actions" data-reveal="fade">
+            <ButtonLink to={pathFor('work', locale)} variant="ghost">
+              {t(copy.allWork)}
+            </ButtonLink>
+          </div>
         </div>
       </section>
 
-      {/* Pricing teaser */}
+      {/* Packages – Apollo highlighted, prices easy to compare */}
       <section className="section" aria-labelledby="home-pricing">
         <div className="container">
           <SectionHead
@@ -190,11 +189,11 @@ export default function HomePage({ id }: PageProps) {
             lead={t(copy.pricingLead)}
             split
           />
-          <div className="grid grid--3">
+          <div className="grid grid--3 price-teasers">
             {tiers.map((tier, i) => (
               <AppLink
                 key={tier.id}
-                to={pathFor('pricing', locale)}
+                to={`${pathFor('pricing', locale)}#paketit`}
                 className={`card glass price-teaser tier--${tier.id}${tier.recommended ? ' is-popular' : ''}`}
                 data-spotlight=""
                 data-reveal=""
@@ -213,20 +212,71 @@ export default function HomePage({ id }: PageProps) {
                   {formatEuro(headlinePrice(tier.id), locale)}
                   {tier.id === 'zeus' && <small>{t(copy.allAddons)}</small>}
                 </p>
-                <p className="muted">
-                  <strong className="price-teaser__kind">{t(tier.kind)}</strong> {t(tier.idealFor)}
-                </p>
+                <p className="price-teaser__kind">{t(tier.kind)}</p>
+                <p className="muted">{t(tier.description)}</p>
                 <span className="link">
-                  {t(ui.seePricing)} <Icon name="arrow" />
+                  {t(copy.seePackage)} <Icon name="arrow" />
                 </span>
               </AppLink>
             ))}
           </div>
-          <div className="btn-row" style={{ marginTop: '2rem' }} data-reveal="fade">
-            <ButtonLink to={pathFor('pricing', locale)} variant="ghost">
-              {t(ui.seePricing)}
-            </ButtonLink>
+          <div className="price-teasers__foot" data-reveal="fade">
+            <p className="muted">
+              {t(vatNote)} {t(copy.pricingNote)}
+            </p>
+            <div className="btn-row">
+              <ButtonLink to={pathFor('pricing', locale)}>{t(copy.compare)}</ButtonLink>
+              <ButtonLink to={pathFor('contact', locale)} variant="ghost" icon={null}>
+                {t(ctaLabel)}
+              </ButtonLink>
+            </div>
           </div>
+        </div>
+      </section>
+
+      {/* Why Hades Design – verified facts about working with us */}
+      <section className="section" aria-labelledby="home-why">
+        <div className="container">
+          <SectionHead id="home-why" eyebrow={t(copy.whyEyebrow)} title={t(copy.whyTitle)} accent={t(copy.whyAccent)} />
+          <ol className="reasons">
+            {reasons.map((reason, i) => (
+              <li key={reason.title.fi} className="reason" data-reveal="" style={{ '--i': i } as CSSProperties}>
+                <span className="reason__no" aria-hidden="true">
+                  0{i + 1}
+                </span>
+                <h3>{t(reason.title)}</h3>
+                <p className="muted">{t(reason.text)}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* Process – a timeline whose ember line fills as you scroll */}
+      <section className="section" aria-labelledby="home-process">
+        <div className="container">
+          <SectionHead
+            id="home-process"
+            eyebrow={t(copy.processEyebrow)}
+            title={t(copy.processTitle)}
+            accent={t(copy.processAccent)}
+            lead={t(copy.processLead)}
+            split
+          />
+          <Process />
+        </div>
+      </section>
+
+      {/* FAQ – the questions that most often stand between a visitor and an enquiry */}
+      <section className="section" aria-labelledby="home-faq">
+        <div className="container narrow">
+          <SectionHead id="home-faq" eyebrow={t(copy.faqEyebrow)} title={t(copy.faqTitle)} accent={t(copy.faqAccent)} />
+          <FaqList items={homeFaq} />
+          <p className="faq-more" data-reveal="fade">
+            <AppLink to={`${pathFor('pricing', locale)}#kysymykset`} className="link">
+              {t(copy.faqMore)} <Icon name="arrow" />
+            </AppLink>
+          </p>
         </div>
       </section>
 

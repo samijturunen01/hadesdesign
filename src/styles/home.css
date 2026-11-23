@@ -346,105 +346,6 @@
   }
 }
 
-/* ---------- Service index ---------- */
-.service-index {
-  list-style: none;
-  border-top: 1px solid var(--line);
-}
-
-.service-index li {
-  border-bottom: 1px solid var(--line);
-}
-
-.service-row {
-  position: relative;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  grid-template-areas:
-    'no name go'
-    'no text text'
-    'no price price';
-  gap: 0.35rem 1rem;
-  padding: 1.6rem 0.5rem;
-  border-radius: var(--r-s);
-  text-decoration: none;
-  isolation: isolate;
-  transition: padding var(--dur-2) var(--ease-out);
-}
-
-.service-row__no {
-  grid-area: no;
-  padding-top: 0.6rem;
-  font-size: var(--step--1);
-  font-weight: 700;
-  color: var(--ember-2);
-}
-
-.service-row__name {
-  grid-area: name;
-  font-family: var(--font-display);
-  font-size: var(--step-3);
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-  transition: color var(--dur-2);
-}
-
-.service-row__text {
-  grid-area: text;
-  color: var(--ink-2);
-  max-width: 34rem;
-}
-
-.service-row__price {
-  grid-area: price;
-  font-weight: 650;
-  color: var(--ink);
-}
-
-.service-row__go {
-  grid-area: go;
-  display: grid;
-  place-items: center;
-  width: 3rem;
-  height: 3rem;
-  border-radius: 50%;
-  border: 1px solid var(--glass-edge-strong);
-  transition: all var(--dur-2) var(--ease-out);
-}
-
-.service-row__go svg {
-  width: 1.2rem;
-  height: 1.2rem;
-}
-
-.service-row:hover .service-row__name {
-  color: var(--ember-2);
-}
-
-.service-row:hover .service-row__go {
-  background: var(--grad-ember);
-  border-color: transparent;
-  color: var(--ember-ink);
-  transform: rotate(45deg);
-}
-
-@media (min-width: 56rem) {
-  .service-row {
-    grid-template-columns: 3rem minmax(0, 1.1fr) minmax(0, 1.2fr) 9rem 3rem;
-    grid-template-areas: 'no name text price go';
-    align-items: center;
-    padding-block: 2rem;
-  }
-
-  .service-row__no {
-    padding-top: 0;
-  }
-
-  .service-row:hover {
-    padding-inline: 1.25rem 0.75rem;
-  }
-}
-
 /* ---------- Why ---------- */
 .why::before {
   content: '';
@@ -719,4 +620,95 @@
     radial-gradient(80% 60% at 50% 120%, rgba(255, 106, 43, 0.22), transparent 70%),
     var(--glass-sheen),
     var(--glass);
+}
+
+.price-teaser .link {
+  margin-top: auto;
+}
+
+/* Apollo – the recommendation – sits a little forward of the other two */
+@media (min-width: 62rem) {
+  .price-teasers {
+    align-items: stretch;
+    padding-top: 0.5rem;
+  }
+
+  .price-teasers .is-popular {
+    transform: translateY(-0.75rem);
+    box-shadow:
+      var(--shadow-2),
+      0 30px 80px -46px rgba(255, 106, 43, 0.75);
+  }
+
+  .price-teasers .is-popular:hover {
+    transform: translateY(-1.1rem);
+  }
+}
+
+.price-teasers__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem 2rem;
+  margin-top: 2rem;
+}
+
+.price-teasers__foot .muted {
+  max-width: 34rem;
+  font-size: var(--step--1);
+}
+
+/* ---------- References: testimonial and actions under the teasers ---------- */
+.home-quote {
+  margin-top: clamp(2rem, 1.5rem + 2vw, 3rem);
+}
+
+.section-actions {
+  margin-top: 2rem;
+}
+
+/* ---------- Why Hades Design ---------- */
+.reasons {
+  display: grid;
+  gap: 0.5rem 2.5rem;
+  list-style: none;
+}
+
+@media (min-width: 48rem) {
+  .reasons {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 72rem) {
+  .reasons {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.reason {
+  display: grid;
+  align-content: start;
+  gap: 0.6rem;
+  padding: 1.5rem 0 1.25rem;
+  border-top: 1px solid var(--line);
+}
+
+.reason__no {
+  font-family: var(--font-display);
+  font-size: var(--step-3);
+  font-style: italic;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255, 138, 76, 0.75);
+}
+
+.reason h3 {
+  font-size: var(--step-1);
+}
+
+/* ---------- FAQ footer link ---------- */
+.faq-more {
+  margin-top: 1.75rem;
 }

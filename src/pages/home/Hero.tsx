@@ -3,23 +3,23 @@ import { ResponsiveImage } from '../../components/ResponsiveImage'
 import { ButtonLink } from '../../components/ui'
 import { Icon } from '../../components/Icon'
 import { LogoMark } from '../../components/Logo'
-import { ctaLabel } from '../../data/navigation'
 import { STARTING_PRICE } from '../../data/pricing'
 import { useLocale, useT, formatEuro } from '../../i18n/locale'
-import { ui } from '../../i18n/strings'
 import { onIdle, prefersReducedMotion, stagger } from '../../lib/motion'
 import { pathFor } from '../../routes'
 
 const copy = {
-  eyebrow: { fi: 'Verkkosivut · Verkkokaupat · Ylläpito', en: 'Websites · Online stores · Maintenance' },
-  title: { fi: 'Verkkosivut, jotka', en: 'Websites that' },
-  accent: { fi: 'tekevät vaikutuksen.', en: 'leave a mark.' },
+  eyebrow: { fi: 'Verkkosivut yrityksille · Conversion First', en: 'Websites for businesses · Conversion First' },
+  title: { fi: 'Verkkosivut, jotka näyttävät hyvältä', en: 'Websites that look good' },
+  accent: { fi: 'ja auttavat myymään.', en: 'and help you sell.' },
   lead: {
-    fi: 'Suunnittelemme ja rakennamme yrityksille modernit, nopeat ja hakukoneoptimoidut verkkosivut ja verkkokaupat – yksilöllisesti, ei massapohjista.',
-    en: 'We design and build modern, fast, search-optimised websites and online stores for businesses – individually, never from mass-produced templates.',
+    fi: 'Suunnittelemme yrityksellesi yksilölliset, nopeat ja myyntiin keskittyvät verkkosivut, jotka herättävät kiinnostusta ja tekevät yhteydenotosta helppoa.',
+    en: 'We design distinctive, fast websites for your business that are focused on selling – built to spark interest and make getting in touch easy.',
   },
+  packages: { fi: 'Katso verkkosivupaketit', en: 'See the website packages' },
+  work: { fi: 'Tutustu toteutuksiin', en: 'See our work' },
   from: { fi: 'Verkkosivut alk.', en: 'Websites from' },
-  fromFact: { fi: 'verkkosivujen aloitushinta', en: 'starting price for websites' },
+  fromFact: { fi: 'verkkosivupakettien aloitushinta', en: 'starting price for website packages' },
   satisfaction: { fi: '100 %', en: '100%' },
   satisfactionFact: { fi: 'asiakastyytyväisyys', en: 'customer satisfaction' },
   availableFact: { fi: 'verkkosivusi asiakkaiden saatavilla', en: 'your website available to customers' },
@@ -98,9 +98,9 @@ export function Hero() {
             {t(copy.lead)}
           </p>
           <div className="btn-row" style={stagger(3)}>
-            <ButtonLink to={pathFor('contact', locale)}>{t(ctaLabel)}</ButtonLink>
+            <ButtonLink to={pathFor('pricing', locale)}>{t(copy.packages)}</ButtonLink>
             <ButtonLink to={pathFor('work', locale)} variant="ghost" icon={null}>
-              {t(ui.seeWork)}
+              {t(copy.work)}
             </ButtonLink>
           </div>
           <ul className="hero__facts" style={stagger(4)}>
