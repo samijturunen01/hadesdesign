@@ -1,9 +1,12 @@
+import { useLocation } from 'react-router'
 import { Icon } from '../../components/Icon'
 import { PageHero } from '../../components/ui'
 import { business } from '../../data/business'
+import { quoteFromSearch, quoteToSearch } from '../../data/pricing'
 import { ContactForm } from '../../features/contact/ContactForm'
 import { useT } from '../../i18n/locale'
 import { stagger } from '../../lib/motion'
+import { useHydrated } from '../../lib/useHydrated'
 import { usePageSeo } from '../../seo/usePageSeo'
 import type { PageProps } from '../registry'
 
@@ -25,6 +28,12 @@ const copy = {
 export default function ContactPage({ id }: PageProps) {
   usePageSeo(id)
   const t = useT()
+  // A package chosen on the pricing page arrives as ?package=…. The page is
+  // prerendered without it, so it is read after hydration; the key gives the
+  // form a fresh start with that choice.
+  const { search } = useLocation()
+  const hydrated = useHydrated()
+  const quote = hydrated ? quoteFromSearch(search) : null
 
   return (
     <>
@@ -33,7 +42,7 @@ export default function ContactPage({ id }: PageProps) {
       <section className="section section--tight" aria-label={t(copy.eyebrow)}>
         <div className="container contact-grid">
           <div data-reveal="">
-            <ContactForm />
+            <ContactForm key={quote ? quoteToSearch(quote) : ''} initialQuote={quote} />
           </div>
 
           <aside className="contact-aside" aria-labelledby="contact-direct">

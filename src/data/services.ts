@@ -1,5 +1,6 @@
 /** The four services (verified copy from the previous site, edited for clarity). */
-import type { Localized } from '../i18n/locale'
+import { formatEuro, type Localized } from '../i18n/locale'
+import { STARTING_PRICE } from './pricing'
 import type { ServicePageId } from '../routes'
 
 export interface Service {
@@ -45,7 +46,7 @@ export const services: Service[] = [
         'Visually modern and professional',
       ],
     },
-    price: { fi: 'alk. 790 €', en: 'from €790' },
+    price: { fi: `alk. ${formatEuro(STARTING_PRICE, 'fi')}`, en: `from ${formatEuro(STARTING_PRICE, 'en')}` },
   },
   {
     id: 'ecommerce',
@@ -75,7 +76,7 @@ export const services: Service[] = [
         'Mobile-optimised checkout',
       ],
     },
-    price: { fi: 'alk. 1 990 €', en: 'from €1,990' },
+    price: null,
   },
   {
     id: 'redesign',

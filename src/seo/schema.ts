@@ -6,7 +6,8 @@
 import { absoluteUrl } from '../config/site'
 import { LOCALE_META, type Locale } from '../i18n/locale'
 import { business } from '../data/business'
-import { maintenancePlan, packages, type WebsitePackage } from '../data/packages'
+import { maintenancePlan } from '../data/packages'
+import { addons, getTier, headlinePrice, STARTING_PRICE, TIER_IDS, ZEUS_FROM_PRICE, ZEUS_FULL_PRICE, type TierId } from '../data/pricing'
 import { getService } from '../data/services'
 import { PATHS, type PageId, type ServicePageId } from '../routes'
 import { SITE_NAME } from './seo'
@@ -31,7 +32,7 @@ export function organizationNode(locale: Locale) {
       addressCountry: business.location.countryCode,
     },
     areaServed: { '@type': 'Country', name: business.location.country[locale] },
-    priceRange: '790–1990 €',
+    priceRange: `${STARTING_PRICE}–${ZEUS_FULL_PRICE} €`,
   }
 }
 
@@ -100,18 +101,33 @@ const euro = (price: number, vatIncluded: boolean | null, unit?: 'MON' | 'ANN') 
   ...(unit ? { unitCode: unit } : {}),
 })
 
-function packageOffer(p: WebsitePackage, locale: Locale) {
-  return {
+
+/** Hermes and Apollo at a fixed price; Zeus from its cheapest configuration, with each add-on as an addOn offer. */
+function tierOffer(id: TierId, locale: Locale) {
+  const tier = getTier(id)
+  const base = {
     '@type': 'Offer',
-    name: p.name[locale],
-    description: `${p.description[locale]} ${p.pages[locale]}.`,
-    price: p.price,
+    name: `${tier.name} – ${tier.kind[locale]}`,
+    description: tier.description[locale],
     priceCurrency: 'EUR',
-    priceSpecification: euro(p.price, true),
     seller: { '@id': ORG_ID },
     url: absoluteUrl(PATHS.pricing[locale]),
   }
+  if (id !== 'zeus') return { ...base, price: headlinePrice(id), priceSpecification: euro(headlinePrice(id), true) }
+  return {
+    ...base,
+    priceSpecification: { '@type': 'PriceSpecification', minPrice: ZEUS_FROM_PRICE, priceCurrency: 'EUR', valueAddedTaxIncluded: true },
+    addOn: addons.map((addon) => ({
+      '@type': 'Offer',
+      name: addon.name[locale],
+      price: addon.price,
+      priceCurrency: 'EUR',
+      priceSpecification: euro(addon.price, true),
+    })),
+  }
 }
+
+const tierOffers = (locale: Locale) => TIER_IDS.map((id) => tierOffer(id, locale))
 
 function maintenanceOffer(locale: Locale) {
   return {
@@ -126,14 +142,14 @@ function maintenanceOffer(locale: Locale) {
   }
 }
 
-/** Offers for the website packages (VAT included) and the maintenance plan (VAT not stated). */
+/** Offers on the pricing page: the website packages (VAT included) and the maintenance plan (VAT not stated). */
 export function offerNodes(locale: Locale) {
-  return [...packages.map((p) => packageOffer(p, locale)), maintenanceOffer(locale)]
+  return [...tierOffers(locale), maintenanceOffer(locale)]
 }
 
 const SERVICE_OFFERS: Record<ServicePageId, (locale: Locale) => object[]> = {
-  websites: (l) => packages.filter((p) => p.id !== 'store').map((p) => packageOffer(p, l)),
-  ecommerce: (l) => packages.filter((p) => p.id === 'store').map((p) => packageOffer(p, l)),
+  websites: (l) => tierOffers(l),
+  ecommerce: () => [],
   redesign: () => [],
   maintenance: (l) => [maintenanceOffer(l)],
 }

@@ -68,6 +68,10 @@ Chosen 2026-10-14. (The multi-agent creative panel in the first session never re
 
 - **Production launch completed 2026-10-15.** Owner reviewed the live site (FI/EN, desktop/mobile) and approved it, and confirmed that a real contact-form message arrived at contact.hadesdesign@gmail.com.
 
+- Pricing redesign 2026-11-23 (owner's brief, deployed 2026-11-23): packages **Hermes 800 € / Apollo 1 000 € (Suosituin) / Zeus = Apollo + add-ons** replace Kevyt and Verkkosivupaketti everywhere (pricing page, home teaser, hero "alk." figure, websites service page, meta, JSON-LD). Single source of truth `src/data/pricing.ts` (prices, copy, comparison matrix, calculator maths, `?package=` URL format), unit-tested by `npm test` (`scripts/pricing.test.mjs`, 26 tests, also in CI). New pricing page: tier cards (subgrid-aligned), Conversion First path, "why Apollo" with an adaptive-form demo, comparison (table on desktop, stacked with sticky legend on phones), Zeus calculator (checkbox cards, language stepper, live total, docked total bar on phones), add-on explanations, included/not-included, maintenance, FAQ. Pricing CTAs pass the choice to the contact form (`?package=zeus&addons=booking,payments&languages=1`), which shows it and prepends it to the message.
+  - **Backend compatibility:** the deployed Apps Script still validates the old `service` keys, so the form maps Hermes → `light`, Apollo/Zeus → `website` (`BACKEND_SERVICE` in `src/features/contact/fields.ts`) and the exact package travels in the message. `apps-script/Site.js` has new labels for those keys but was **not** redeployed – until it is, the email's "Kiinnostaa" line shows the old labels (the message itself is correct).
+  - QA: lint, typecheck, `npm test`, build, `npm run check` (48 pages, 0 errors/warnings); headless Chrome at 1440/1024/768/390/360 – no overflow; keyboard-only calculator; reduced motion; production preview: hydration with `?package=` on contact and pricing pages, stubbed-network form submission payload.
+
 ## Remaining
 
 Resume here – one step at a time, owner performs every dashboard action:
@@ -81,7 +85,7 @@ Resume here – one step at a time, owner performs every dashboard action:
 - [ ] Lighthouse run on production (mobile), fix anything below ~90.
 - [ ] Owner actions: review privacy policy; confirm remaining items in `docs/CONTENT-SOURCES.md`.
 - [ ] Later: keep the Zoner hosting until the new site has run cleanly for a while (rollback, §Rollback); optional DNSSEC and `v=spf1 -all` / DMARC `p=reject` (§11).
-- Optional ideas: preselect the package in the contact form from pricing CTAs.
+- [ ] **Pricing (2026-11-23):** owner to confirm the items under *Not known* in `docs/CONTENT-SOURCES.md` (VAT on the new prices, delivery times, Apollo page count, translation scope) before merging to `main`; then optionally `deploy` the Apps Script so emails show the new package labels.
 
 ## QA tooling notes
 

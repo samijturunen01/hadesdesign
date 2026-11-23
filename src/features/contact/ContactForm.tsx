@@ -1,11 +1,17 @@
 import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 import { Icon } from '../../components/Icon'
+import { lineItemLabel, zeusSubtitle } from '../../components/pricing/labels'
+import { TierEmblem } from '../../components/pricing/TierEmblem'
 import { isContactFormConfigured } from '../../config/site'
-import { useLocale, useT } from '../../i18n/locale'
+import { vatShort } from '../../data/packages'
+import { getTier, lineItems, quoteToSearch, quoteTotal, type Quote } from '../../data/pricing'
+import { formatEuro, useLocale, useT } from '../../i18n/locale'
 import { AppLink } from '../../lib/AppLink'
 import { pathFor } from '../../routes'
 import {
+  BACKEND_SERVICE,
   emptyContact,
+  isTierOption,
   LIMITS,
   SERVICE_OPTIONS,
   serviceLabels,
@@ -14,6 +20,7 @@ import {
   type FieldErrors,
   type FieldName,
 } from './fields'
+import { quoteSummary } from './quote'
 import { getRecaptchaToken, loadRecaptcha } from './recaptcha'
 import { ContactError, contactErrorMessage, submitContact } from './submit'
 
@@ -51,14 +58,24 @@ const copy = {
   gPrivacy: { fi: 'tietosuojakäytäntöä', en: 'Privacy Policy' },
   gTerms: { fi: 'käyttöehtoja', en: 'Terms of Service' },
   gApply: { fi: '.', en: ' apply.' },
+  quoteEyebrow: { fi: 'Valitsemasi kokonaisuus', en: 'Your selection' },
+  oneTime: { fi: 'Kertahinta', en: 'One-time price' },
+  quoteNote: {
+    fi: 'Valintasi lähetetään viestisi mukana. Tämä on maksuton tarjouspyyntö – ei tilaus.',
+    en: 'Your selection is sent with your message. This is a free quote request – not an order.',
+  },
+  editQuote: { fi: 'Muokkaa valintaa', en: 'Change selection' },
+  removeQuote: { fi: 'Poista valinta', en: 'Remove selection' },
 }
 
 type Status = 'idle' | 'sending' | 'sent' | 'error'
 
-export function ContactForm() {
+/** `initialQuote`: a package configuration brought from the pricing page (?package=…). */
+export function ContactForm({ initialQuote = null }: { initialQuote?: Quote | null }) {
   const t = useT()
   const locale = useLocale()
-  const [values, setValues] = useState<ContactValues>(emptyContact)
+  const [quote, setQuote] = useState<Quote | null>(initialQuote)
+  const [values, setValues] = useState<ContactValues>(() => ({ ...emptyContact, service: initialQuote?.tier ?? '' }))
   const [errors, setErrors] = useState<FieldErrors>({})
   const [attempted, setAttempted] = useState(false)
   const [status, setStatus] = useState<Status>('idle')
@@ -84,8 +101,26 @@ export function ContactForm() {
     loadRecaptcha(locale).catch(() => (warmed.current = false))
   }
 
+  // The package choice travels in front of the message, so the message itself gets less room.
+  const prefixFor = (service: ContactValues['service'], withQuote: Quote | null) =>
+    isTierOption(service) ? `${quoteSummary(service, withQuote, locale)}\n\n` : ''
+  const prefix = prefixFor(values.service, quote)
+  const messageMax = LIMITS.message.max - prefix.length
+
   const update = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const next = { ...values, [event.target.name]: event.target.value }
+    setValues(next)
+    // Choosing another package drops the configuration brought from the pricing page.
+    const nextQuote = event.target.name === 'service' && quote && event.target.value !== quote.tier ? null : quote
+    if (nextQuote !== quote) setQuote(nextQuote)
+    if (attempted) {
+      setErrors(validateContact(next, locale, LIMITS.message.max - prefixFor(next.service, nextQuote).length))
+    }
+  }
+
+  const removeQuote = () => {
+    setQuote(null)
+    const next = { ...values, service: '' as const }
     setValues(next)
     if (attempted) setErrors(validateContact(next, locale))
   }
@@ -93,7 +128,7 @@ export function ContactForm() {
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     if (status === 'sending') return
-    const found = validateContact(values, locale)
+    const found = validateContact(values, locale, messageMax)
     setAttempted(true)
     setErrors(found)
     const first = Object.keys(found)[0]
@@ -117,11 +152,19 @@ export function ContactForm() {
         throw new ContactError('recaptcha-unavailable', contactErrorMessage('recaptcha-unavailable', locale))
       }
       await submitContact(
-        { ...values, token, elapsed: Date.now() - shownAt.current, page: window.location.href },
+        {
+          ...values,
+          service: values.service ? BACKEND_SERVICE[values.service] : '',
+          message: prefix + values.message,
+          token,
+          elapsed: Date.now() - shownAt.current,
+          page: window.location.href,
+        },
         locale,
       )
       setStatus('sent')
       setValues(emptyContact)
+      setQuote(null)
       setAttempted(false)
     } catch (error) {
       setStatus('error')
@@ -169,6 +212,51 @@ export function ContactForm() {
 
   return (
     <form ref={formRef} className="contact-form glass" noValidate onSubmit={onSubmit} onFocus={warmUp}>
+      {quote && (
+        <section className={`quote-card tier--${quote.tier}`} aria-labelledby="quote-card-title">
+          <div className="quote-card__head">
+            <span className="tier__emblem">
+              <TierEmblem tier={quote.tier} />
+            </span>
+            <div className="quote-card__title">
+              <p className="quote-card__eyebrow">{t(copy.quoteEyebrow)}</p>
+              <h2 id="quote-card-title" className="quote-card__name">
+                {getTier(quote.tier).name}
+              </h2>
+              <p className="quote-card__sub">{zeusSubtitle(quote.selection, locale) ?? t(getTier(quote.tier).kind)}</p>
+            </div>
+            <p className="quote-card__total">
+              {formatEuro(quoteTotal(quote), locale)}
+              <small>
+                {t(copy.oneTime)} · {t(vatShort)}
+              </small>
+            </p>
+          </div>
+          {quote.tier === 'zeus' && (
+            <ul className="quote-card__lines">
+              {lineItems(quote.selection).map((item) => (
+                <li key={item.id}>
+                  <span>{lineItemLabel(item, locale)}</span>
+                  <span>{formatEuro(item.amount, locale)}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+          <p className="quote-card__note">{t(copy.quoteNote)}</p>
+          <div className="quote-card__actions">
+            <AppLink
+              to={`${pathFor('pricing', locale)}${quote.tier === 'hermes' ? '#paketit' : `${quoteToSearch(quote)}#laskuri`}`}
+              className="link"
+            >
+              {t(copy.editQuote)} <Icon name="arrow" />
+            </AppLink>
+            <button type="button" className="quote-card__remove" onClick={removeQuote}>
+              <Icon name="close" />
+              {t(copy.removeQuote)}
+            </button>
+          </div>
+        </section>
+      )}
       <div className="form-grid">
         <div className="field">
           <label htmlFor="contact-name">{t(copy.name)}</label>
@@ -211,14 +299,14 @@ export function ContactForm() {
           <textarea
             {...field('message')}
             rows={6}
-            maxLength={LIMITS.message.max}
+            maxLength={messageMax}
             placeholder={t(copy.messagePlaceholder)}
             required
           />
           <div className="field-row">
             {error('message') ?? <span />}
             <span className="field-hint">
-              {values.message.length} / {LIMITS.message.max}
+              {values.message.length} / {messageMax}
             </span>
           </div>
         </div>

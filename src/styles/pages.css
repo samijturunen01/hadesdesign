@@ -61,10 +61,6 @@
   flex: none;
 }
 
-.package-single {
-  max-width: 34rem;
-}
-
 .more-services {
   list-style: none;
 }
@@ -99,146 +95,6 @@
 
 .more-service:hover .more-service__go {
   transform: translate(3px, -3px);
-}
-
-/* Package card */
-.package {
-  display: flex;
-  flex-direction: column;
-  gap: 1.1rem;
-}
-
-.package__head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.6rem;
-}
-
-.package__head h3 {
-  font-family: var(--font-display);
-  font-weight: 450;
-  font-size: var(--step-2);
-  letter-spacing: -0.015em;
-}
-
-.package__price {
-  display: grid;
-  gap: 0.3rem;
-  font-family: var(--font-display);
-  font-size: var(--step-5);
-  line-height: 1;
-  letter-spacing: -0.035em;
-}
-
-.package__price small {
-  font-family: var(--font-body);
-  font-size: var(--step--1);
-  letter-spacing: 0;
-  color: var(--ink-3);
-}
-
-.package__meta {
-  display: grid;
-  gap: 0.4rem;
-  margin: 0;
-  padding: 1rem 0;
-  border-block: 1px solid var(--line);
-}
-
-.package__meta dd {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  margin: 0;
-  font-weight: 600;
-}
-
-.package__meta svg {
-  width: 1.1rem;
-  height: 1.1rem;
-  color: var(--ember-2);
-}
-
-.package__cta {
-  margin-top: auto;
-}
-
-.packages {
-  align-items: stretch;
-}
-
-@media (min-width: 62rem) {
-  .packages .is-popular {
-    transform: translateY(-1rem);
-  }
-}
-
-/* Comparison table */
-.table-wrap {
-  overflow-x: auto;
-  border-radius: var(--r-l);
-}
-
-.compare {
-  width: 100%;
-  min-width: 40rem;
-  border-collapse: collapse;
-  font-size: var(--step--1);
-}
-
-.compare th,
-.compare td {
-  padding: 0.95rem 1.2rem;
-  border-bottom: 1px solid var(--line);
-  text-align: center;
-  vertical-align: middle;
-}
-
-.compare tbody tr:last-child > * {
-  border-bottom: 0;
-}
-
-.compare th:first-child {
-  text-align: left;
-  font-weight: 500;
-  color: var(--ink-2);
-}
-
-.compare thead th {
-  font-family: var(--font-display);
-  font-size: var(--step-1);
-  font-weight: 450;
-  color: var(--ink);
-}
-
-.compare thead th span {
-  display: block;
-  margin-top: 0.25rem;
-  font-family: var(--font-body);
-  font-size: var(--step--1);
-  font-weight: 700;
-  color: var(--ember-2);
-}
-
-.compare .is-hot {
-  background: rgba(255, 122, 61, 0.05);
-}
-
-.compare tbody tr:hover > * {
-  background-color: rgba(236, 232, 242, 0.03);
-}
-
-.compare .yes {
-  width: 1.3rem;
-  height: 1.3rem;
-  margin-inline: auto;
-  color: var(--ember);
-}
-
-.compare .no {
-  color: var(--ink-3);
 }
 
 /* Maintenance plan */
@@ -758,12 +614,4 @@
 .form-grid > *,
 .field {
   min-width: 0;
-}
-
-/* Keep feature names visible while the comparison scrolls sideways on small screens */
-.compare th:first-child {
-  position: sticky;
-  left: 0;
-  z-index: 1;
-  background: #110f17;
 }

@@ -1,6 +1,12 @@
 /** Page titles and meta descriptions (≈ 50–160 characters, verified facts only). */
-import type { Localized } from '../i18n/locale'
+import { PRICES, STARTING_PRICE } from '../data/pricing'
+import { formatEuro, type Localized } from '../i18n/locale'
 import type { PageId } from '../routes'
+
+const eur = (amount: number) => ({ fi: formatEuro(amount, 'fi'), en: formatEuro(amount, 'en') })
+const from = eur(STARTING_PRICE)
+const hermes = eur(PRICES.hermes)
+const apollo = eur(PRICES.apollo)
 
 export interface PageMeta {
   /** Title without the site name; the home page uses fullTitle. */
@@ -14,12 +20,12 @@ export const pageMeta: Record<PageId | 'notFound', Localized<PageMeta>> = {
     fi: {
       fullTitle: 'Hades Design – Verkkosivut ja verkkokaupat yrityksille',
       description:
-        'Modernit, nopeat ja hakukoneoptimoidut verkkosivut yrityksille alk. 790 €. Verkkosivut, verkkokaupat ja ylläpito Joensuusta – paikallisesti ja etänä.',
+        `Modernit, nopeat ja hakukoneoptimoidut verkkosivut yrityksille alk. ${from.fi}. Verkkosivut, verkkokaupat ja ylläpito Joensuusta – paikallisesti ja etänä.`,
     },
     en: {
       fullTitle: 'Hades Design – Websites and online stores for businesses',
       description:
-        'Modern, fast, search-optimised websites for businesses from €790. Websites, online stores and maintenance from Joensuu, Finland – locally and remotely.',
+        `Modern, fast, search-optimised websites for businesses from ${from.en}. Websites, online stores and maintenance from Joensuu, Finland – locally and remotely.`,
     },
   },
   services: {
@@ -38,24 +44,24 @@ export const pageMeta: Record<PageId | 'notFound', Localized<PageMeta>> = {
     fi: {
       title: 'Verkkosivut yritykselle – suunnittelu ja kehitys',
       description:
-        'Yksilöllisesti suunnitellut, responsiiviset ja nopeat verkkosivut yrityksellesi – ei valmiista massapohjista. Verkkosivupaketit alk. 790 € (sis. ALV).',
+        `Yksilöllisesti suunnitellut, responsiiviset ja nopeat verkkosivut yrityksellesi – ei valmiista massapohjista. Verkkosivupaketit alk. ${from.fi} (sis. ALV).`,
     },
     en: {
       title: 'Business websites – design and development',
       description:
-        'Individually designed, responsive and fast websites for your business – never from mass-produced templates. Website packages from €790 (VAT incl.).',
+        `Individually designed, responsive and fast websites for your business – never from mass-produced templates. Website packages from ${from.en} (VAT incl.).`,
     },
   },
   ecommerce: {
     fi: {
       title: 'Verkkokauppa yritykselle',
       description:
-        'Turvallinen ja skaalautuva verkkokauppa: tuotekuvasto, maksujen käsittely, tilausten seuranta ja mobiilioptimoitu kassa. Verkkokauppapaketti 1 990 € (sis. ALV).',
+        'Turvallinen ja skaalautuva verkkokauppa: tuotekuvasto, maksujen käsittely, tilausten seuranta ja mobiilioptimoitu kassa.',
     },
     en: {
       title: 'Online stores for businesses',
       description:
-        'A secure, scalable online store with a product catalogue, payment processing, order tracking and a mobile-optimised checkout. Package €1,990 (VAT incl.).',
+        'A secure, scalable online store with a product catalogue, payment processing, order tracking and a mobile-optimised checkout.',
     },
   },
   redesign: {
@@ -96,14 +102,14 @@ export const pageMeta: Record<PageId | 'notFound', Localized<PageMeta>> = {
   },
   pricing: {
     fi: {
-      title: 'Hinnasto – verkkosivut alk. 790 €',
+      title: `Hinnasto – verkkosivut alk. ${from.fi}`,
       description:
-        'Selkeät hinnat: Kevyt verkkosivupaketti 790 €, Verkkosivupaketti 990 € ja Verkkokauppapaketti 1 990 € (sis. ALV). Ylläpito & hosting 40 €/kk.',
+        `Hermes ${hermes.fi}, Apollo ${apollo.fi} ja Zeus – Apollo valitsemillasi lisäosilla. Laske hinta Zeus-laskurilla. Hinnat sis. ALV. Ylläpito & hosting 40 €/kk.`,
     },
     en: {
-      title: 'Pricing – websites from €790',
+      title: `Pricing – websites from ${from.en}`,
       description:
-        'Clear prices: Light website package €790, Website package €990 and Online store package €1,990 (VAT incl.). Maintenance & hosting €40/month.',
+        `Hermes ${hermes.en}, Apollo ${apollo.en} and Zeus – Apollo with the add-ons you choose. Work out your price with the Zeus calculator. VAT incl. Maintenance €40/month.`,
     },
   },
   about: {

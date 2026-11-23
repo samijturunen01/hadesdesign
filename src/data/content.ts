@@ -2,7 +2,8 @@
  * Shared, verified content blocks used on several pages: the four reasons to
  * choose Hades Design, the process, values, approach, FAQs and the testimonial.
  */
-import type { Localized } from '../i18n/locale'
+import { formatEuro, type Localized } from '../i18n/locale'
+import { NO_ADDONS, PRICES, ZEUS_FULL_PRICE, zeusTotal } from './pricing'
 
 export interface TitledText {
   title: Localized
@@ -147,7 +148,41 @@ export interface Faq {
   a: Localized
 }
 
+const eur = (amount: number): Localized => ({ fi: formatEuro(amount, 'fi'), en: formatEuro(amount, 'en') })
+const hermes = eur(PRICES.hermes)
+const apollo = eur(PRICES.apollo)
+const apolloBooking = eur(zeusTotal({ ...NO_ADDONS, booking: true }))
+const zeusFull = eur(ZEUS_FULL_PRICE)
+
 export const pricingFaq: Faq[] = [
+  {
+    q: { fi: 'Mikä paketti sopii minulle?', en: 'Which package is right for me?' },
+    a: {
+      fi: `Jos yksi selkeä sivu riittää kertomaan palvelusi, Hermes (${hermes.fi}) on hyvä valinta. Useimmille yrityksille suosittelemme Apolloa (${apollo.fi}): jokainen palvelu saa oman sivunsa, ja asiakaspolku suunnitellaan koko sivustolle. Zeus kannattaa, kun tarvitset ajanvarausta, verkkomaksuja, analytiikkaa tai kieliversioita. Jos et ole varma, kerro tarpeistasi – suosittelemme sopivinta vaihtoehtoa, emme kalleinta.`,
+      en: `If one clear page is enough to present your services, Hermes (${hermes.en}) is a good choice. For most businesses we recommend Apollo (${apollo.en}): every service gets its own page and the customer journey is planned across the whole site. Zeus makes sense when you need online booking, payments, analytics or language versions. Not sure? Tell us what you need – we recommend the best fit, not the most expensive option.`,
+    },
+  },
+  {
+    q: { fi: 'Onko Hermes laadultaan heikompi kuin Apollo?', en: 'Is Hermes lower quality than Apollo?' },
+    a: {
+      fi: 'Ei. Jokainen paketti suunnitellaan samalla huolellisuudella ja Conversion First -periaatteella. Ero on laajuudessa: Hermes on yksi tiivis sivu, Apollo monisivuinen kokonaisuus omalla luovalla konseptilla, ja Zeus lisää Apolloon valitsemasi toiminnot.',
+      en: 'No. Every package is designed with the same care and the same Conversion First principle. The difference is scope: Hermes is one focused page, Apollo a multi-page site with its own creative direction, and Zeus adds the functionality you choose to Apollo.',
+    },
+  },
+  {
+    q: { fi: 'Pitääkö Zeukseen valita kaikki lisäosat?', en: 'Do I have to take every Zeus add-on?' },
+    a: {
+      fi: `Ei. Zeus on Apollo-verkkosivusto, johon valitset vain tarvitsemasi lisäosat, ja maksat vain niistä. Esimerkiksi Apollo ja ajanvaraus maksavat yhteensä ${apolloBooking.fi}. Kaikki neljä lisäosaa yhdellä lisäkielellä maksavat ${zeusFull.fi}.`,
+      en: `No. Zeus is the Apollo website with only the add-ons you need, and you only pay for those. Apollo with online booking, for example, costs ${apolloBooking.en} in total. All four add-ons with one additional language cost ${zeusFull.en}.`,
+    },
+  },
+  {
+    q: { fi: 'Onko laskurin hinta lopullinen?', en: 'Is the calculator price final?' },
+    a: {
+      fi: 'Laskuri näyttää pakettien ja lisäosien hinnat sellaisinaan. Ennen työn aloittamista vahvistamme tarjouksessa kokonaisuuden, aikataulun ja mahdolliset ulkoiset kulut, kuten maksupalvelun maksut. Jos tarvitset jotain pakettien ulkopuolelta, arvioimme sen erikseen. Laskuri ei tee tilausta – tarjouspyyntö on maksuton ja sitoumukseton.',
+      en: 'The calculator shows the package and add-on prices as they are. Before any work starts, we confirm the scope, schedule and any external costs, such as payment provider fees, in the quote. Anything beyond the packages is estimated separately. The calculator does not place an order – a quote request is free and non-binding.',
+    },
+  },
   {
     q: { fi: 'Mitä maksutapoja hyväksytte?', en: 'Which payment methods do you accept?' },
     a: {
@@ -158,8 +193,8 @@ export const pricingFaq: Faq[] = [
   {
     q: { fi: 'Kuinka kauan verkkosivujen tekeminen kestää?', en: 'How long does it take to build a website?' },
     a: {
-      fi: 'Aikataulu riippuu projektin laajuudesta. Kevyt verkkosivupaketti valmistuu tyypillisesti 1–2 viikossa, Verkkosivupaketti 2–3 viikossa ja Verkkokauppapaketti 3–4 viikossa.',
-      en: 'Timelines depend on the scope of the project. A Light website package typically takes 1–2 weeks, a Website package 2–3 weeks and an Online store package 3–4 weeks.',
+      fi: 'Aikataulu riippuu sivuston laajuudesta, valituista lisäosista ja siitä, kuinka nopeasti sisällöt ovat valmiina. Kerromme arvioidun aikataulun tarjouksen yhteydessä.',
+      en: 'It depends on the size of the site, the add-ons you choose and how soon the content is ready. We give you an estimated schedule with the quote.',
     },
   },
   {
@@ -172,8 +207,8 @@ export const pricingFaq: Faq[] = [
   {
     q: { fi: 'Voinko päivittää pakettiani myöhemmin?', en: 'Can I upgrade my package later?' },
     a: {
-      fi: 'Ehdottomasti. Voit laajentaa sivustoasi milloin tahansa – hyvitämme alkuperäisen investointisi ja käytämme sen päivitettyyn pakettiin.',
-      en: 'Absolutely. You can upgrade your site at any time – we credit your original investment towards the upgraded package.',
+      fi: 'Ehdottomasti. Voit laajentaa sivustoasi milloin tahansa – esimerkiksi Hermeksestä Apolloksi tai lisäämällä Apolloon Zeus-lisäosia. Hyvitämme alkuperäisen investointisi ja käytämme sen päivitettyyn pakettiin.',
+      en: 'Absolutely. You can extend your site at any time – from Hermes to Apollo, for example, or by adding Zeus add-ons to Apollo. We credit your original investment towards the upgraded package.',
     },
   },
   {

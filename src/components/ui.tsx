@@ -31,7 +31,8 @@ export function ButtonLink({
       {icon && <Icon name={icon} />}
     </>
   )
-  if (/^(https?:|mailto:|tel:)/.test(to)) {
+  // External links and same-page anchors are plain <a> elements (no route change).
+  if (/^(https?:|mailto:|tel:|#)/.test(to)) {
     return (
       <a className={cls} href={to} data-magnetic="">
         {content}

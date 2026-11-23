@@ -4,6 +4,7 @@ import { ButtonLink } from '../../components/ui'
 import { Icon } from '../../components/Icon'
 import { LogoMark } from '../../components/Logo'
 import { ctaLabel } from '../../data/navigation'
+import { STARTING_PRICE } from '../../data/pricing'
 import { useLocale, useT, formatEuro } from '../../i18n/locale'
 import { ui } from '../../i18n/strings'
 import { onIdle, prefersReducedMotion, stagger } from '../../lib/motion'
@@ -104,7 +105,7 @@ export function Hero() {
           </div>
           <ul className="hero__facts" style={stagger(4)}>
             <li>
-              <strong>{formatEuro(790, locale)}</strong>
+              <strong>{formatEuro(STARTING_PRICE, locale)}</strong>
               <span>{t(copy.fromFact)}</span>
             </li>
             <li>
@@ -138,7 +139,7 @@ export function Hero() {
             <div className="stage__chip stage__chip--price glass">
               <span className="dot" />
               <span>
-                {t(copy.from)} <strong>{formatEuro(790, locale)}</strong>
+                {t(copy.from)} <strong>{formatEuro(STARTING_PRICE, locale)}</strong>
               </span>
             </div>
             <div className="stage__chip stage__chip--speed glass">

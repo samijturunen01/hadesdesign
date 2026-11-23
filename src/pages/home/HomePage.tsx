@@ -3,7 +3,9 @@ import { Process } from '../../components/Process'
 import { ResponsiveImage } from '../../components/ResponsiveImage'
 import { ButtonLink, CtaBand, SectionHead } from '../../components/ui'
 import { pillars, pillarsIntro, testimonial } from '../../data/content'
-import { packages, popularLabel } from '../../data/packages'
+import { TierEmblem } from '../../components/pricing/TierEmblem'
+import { recommendedLabel } from '../../data/packages'
+import { headlinePrice, tiers } from '../../data/pricing'
 import { projects } from '../../data/projects'
 import { services } from '../../data/services'
 import { formatEuro, useLocale, useT } from '../../i18n/locale'
@@ -42,10 +44,11 @@ const copy = {
   pricingTitle: { fi: 'Selkeät paketit,', en: 'Clear packages,' },
   pricingAccent: { fi: 'selkeät hinnat.', en: 'clear prices.' },
   pricingLead: {
-    fi: 'Hinnat sisältävät ALV:n. Valitse yrityksellesi sopiva paketti.',
-    en: 'Prices include VAT. Choose the package that suits your business.',
+    fi: 'Hermes, Apollo ja Zeus – suunniteltu näyttämään hyvältä, rakennettu myymään. Hinnat sisältävät ALV:n.',
+    en: 'Hermes, Apollo and Zeus – designed to look good, built to sell. Prices include VAT.',
   },
   quoteLabel: { fi: 'Asiakkaan sanoin', en: 'In a client’s words' },
+  allAddons: { fi: 'kaikilla lisäosilla', en: 'with every add-on' },
 }
 
 export default function HomePage({ id }: PageProps) {
@@ -188,22 +191,30 @@ export default function HomePage({ id }: PageProps) {
             split
           />
           <div className="grid grid--3">
-            {packages.map((pkg, i) => (
+            {tiers.map((tier, i) => (
               <AppLink
-                key={pkg.id}
+                key={tier.id}
                 to={pathFor('pricing', locale)}
-                className={`card glass price-teaser${pkg.popular ? ' is-popular' : ''}`}
+                className={`card glass price-teaser tier--${tier.id}${tier.recommended ? ' is-popular' : ''}`}
                 data-spotlight=""
                 data-reveal=""
                 style={stagger(i)}
               >
                 <div className="price-teaser__top">
-                  <h3>{t(pkg.name)}</h3>
-                  {pkg.popular && <span className="chip chip--ember">{t(popularLabel)}</span>}
+                  <span className="price-teaser__name">
+                    <span className="tier__emblem">
+                      <TierEmblem tier={tier.id} />
+                    </span>
+                    <h3>{tier.name}</h3>
+                  </span>
+                  {tier.recommended && <span className="chip chip--ember">{t(recommendedLabel)}</span>}
                 </div>
-                <p className="price-teaser__price">{formatEuro(pkg.price, locale)}</p>
+                <p className="price-teaser__price">
+                  {formatEuro(headlinePrice(tier.id), locale)}
+                  {tier.id === 'zeus' && <small>{t(copy.allAddons)}</small>}
+                </p>
                 <p className="muted">
-                  {t(pkg.pages)} · {t(pkg.description)}
+                  <strong className="price-teaser__kind">{t(tier.kind)}</strong> {t(tier.idealFor)}
                 </p>
                 <span className="link">
                   {t(ui.seePricing)} <Icon name="arrow" />

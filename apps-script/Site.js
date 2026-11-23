@@ -32,10 +32,17 @@ var SITE = {
     {
       key: 'service',
       label: 'Kiinnostaa',
+      /**
+       * Keys are unchanged since the first deployment; the website maps its
+       * Hermes / Apollo / Zeus choices onto them (src/features/contact/fields.ts
+       * → BACKEND_SERVICE) and sends the exact package in the message. Only the
+       * labels below changed (2026-11-23) – they reach the email after the
+       * next `deploy`; until then the old labels are shown.
+       */
       options: {
-        light: 'Kevyt verkkosivupaketti (790 €)',
-        website: 'Verkkosivupaketti (990 €)',
-        store: 'Verkkokauppapaketti (1 990 €)',
+        light: 'Hermes – yhden sivun verkkosivusto (800 €)',
+        website: 'Apollo tai Zeus – monisivuinen verkkosivusto (alk. 1 000 €)',
+        store: 'Verkkokauppa',
         redesign: 'Verkkosivujen uudistus',
         maintenance: 'Ylläpito & hosting',
         other: 'Muu / en ole vielä varma',

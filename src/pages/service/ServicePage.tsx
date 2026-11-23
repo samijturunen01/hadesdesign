@@ -1,12 +1,12 @@
 import { Icon } from '../../components/Icon'
 import { MaintenancePlan } from '../../components/MaintenancePlan'
-import { PackageCard } from '../../components/PackageCard'
+import { TierCard } from '../../components/pricing/TierCard'
 import { Process } from '../../components/Process'
 import { SERVICE_ICONS } from '../../components/serviceIcons'
 import { ButtonLink, CtaBand, FaqList, PageHero, SectionHead } from '../../components/ui'
 import { maintenanceFaq } from '../../data/content'
 import { ctaLabel, pageNames } from '../../data/navigation'
-import { packages } from '../../data/packages'
+import { TIER_IDS } from '../../data/pricing'
 import { getService, services } from '../../data/services'
 import { useLocale, useT } from '../../i18n/locale'
 import { ui } from '../../i18n/strings'
@@ -41,7 +41,6 @@ export default function ServicePage({ id }: PageProps) {
   usePageSeo(id, { extra: [serviceNode(serviceId, locale)] })
   const t = useT()
   const service = getService(serviceId)
-  const related = packages.filter((p) => (serviceId === 'ecommerce' ? p.id === 'store' : p.id !== 'store'))
 
   return (
     <>
@@ -81,7 +80,7 @@ export default function ServicePage({ id }: PageProps) {
         </div>
       </section>
 
-      {(serviceId === 'websites' || serviceId === 'ecommerce') && (
+      {serviceId === 'websites' && (
         <section className="section" aria-labelledby="svc-packages">
           <div className="container">
             <SectionHead
@@ -90,9 +89,9 @@ export default function ServicePage({ id }: PageProps) {
               title={t(copy.packagesTitle)}
               accent={t(copy.packagesAccent)}
             />
-            <div className={`grid ${related.length > 1 ? 'grid--2' : 'package-single'}`}>
-              {related.map((pkg, i) => (
-                <PackageCard key={pkg.id} pkg={pkg} index={i} />
+            <div className="tiers">
+              {TIER_IDS.map((tierId, i) => (
+                <TierCard key={tierId} id={tierId} index={i} />
               ))}
             </div>
           </div>

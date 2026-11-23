@@ -8,7 +8,7 @@
  */
 import { config } from '../../config/site'
 import type { Locale, Localized } from '../../i18n/locale'
-import type { ContactValues } from './fields'
+import type { BackendService, ContactValues } from './fields'
 
 export type ContactErrorCode =
   | 'not-configured'
@@ -83,7 +83,9 @@ export function contactErrorMessage(code: ContactErrorCode, locale: Locale): str
   }
 }
 
-export interface ContactPayload extends ContactValues {
+export interface ContactPayload extends Omit<ContactValues, 'service'> {
+  /** The form choice translated to a value the backend accepts (fields.ts → BACKEND_SERVICE). */
+  service: BackendService | ''
   /** reCAPTCHA v3 token for the action in config.recaptchaAction. */
   token: string
   /** Milliseconds since the form was shown (bots fill forms instantly). */

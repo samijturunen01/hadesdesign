@@ -11,6 +11,7 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
+    "test": "node --test scripts/pricing.test.mjs",
     "check": "node scripts/check-dist.mjs",
     "assets": "node scripts/generate-assets.mjs"
   },
