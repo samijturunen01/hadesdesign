@@ -206,8 +206,11 @@ export function ContactLines() {
   )
 }
 
-/** Closing call to action used at the bottom of most pages. */
-export function CtaBand({ title, text }: { title?: string; text?: string }) {
+/**
+ * Closing call to action used at the bottom of most pages.
+ * `to` overrides the contact link, e.g. to preselect a choice in the form.
+ */
+export function CtaBand({ title, text, to }: { title?: string; text?: string; to?: string }) {
   const t = useT()
   const locale = useLocale()
   return (
@@ -220,7 +223,7 @@ export function CtaBand({ title, text }: { title?: string; text?: string }) {
             <p className="lead">{text ?? t(ui.ctaText)}</p>
           </div>
           <div className="stack" style={{ '--stack': '1.5rem' } as CSSProperties}>
-            <ButtonLink to={pathFor('contact', locale)}>{t(ui.contactUs)}</ButtonLink>
+            <ButtonLink to={to ?? pathFor('contact', locale)}>{t(ui.contactUs)}</ButtonLink>
             <ContactLines />
           </div>
         </div>

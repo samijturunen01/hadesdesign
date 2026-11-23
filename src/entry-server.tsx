@@ -79,6 +79,14 @@ export function siteManifest() {
         alternates: LOCALES.map((l) => ({ hreflang: LOCALE_META[l].htmlLang, path: PATHS[id][l] })),
       })),
     ),
-    legacy: LEGACY_REDIRECTS.flatMap((r) => r.from.map((from) => ({ from, fi: PATHS[r.to].fi, en: PATHS[r.to].en }))),
+    // A language-specific redirect sends both "languages" to that language's page.
+    legacy: LEGACY_REDIRECTS.flatMap((r) =>
+      r.from.map((from) => ({
+        from,
+        lang: r.locale ?? 'fi',
+        fi: PATHS[r.to][r.locale ?? 'fi'],
+        en: PATHS[r.to][r.locale ?? 'en'],
+      })),
+    ),
   }
 }

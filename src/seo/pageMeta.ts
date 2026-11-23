@@ -1,5 +1,5 @@
 /** Page titles and meta descriptions (≈ 50–160 characters, verified facts only). */
-import { PRICES, STARTING_PRICE } from '../data/pricing'
+import { PRICES, STARTING_PRICE, ZEUS_FULL_PRICE } from '../data/pricing'
 import { formatEuro, type Localized } from '../i18n/locale'
 import type { PageId } from '../routes'
 
@@ -7,6 +7,7 @@ const eur = (amount: number) => ({ fi: formatEuro(amount, 'fi'), en: formatEuro(
 const from = eur(STARTING_PRICE)
 const hermes = eur(PRICES.hermes)
 const apollo = eur(PRICES.apollo)
+const zeus = eur(ZEUS_FULL_PRICE)
 
 export interface PageMeta {
   /** Title without the site name; the home page uses fullTitle. */
@@ -18,62 +19,38 @@ export interface PageMeta {
 export const pageMeta: Record<PageId | 'notFound', Localized<PageMeta>> = {
   home: {
     fi: {
-      fullTitle: 'Hades Design – Verkkosivut ja verkkokaupat yrityksille',
+      fullTitle: 'Verkkosivut yritykselle – Hades Design, Joensuu',
       description:
-        `Modernit, nopeat ja hakukoneoptimoidut verkkosivut yrityksille alk. ${from.fi}. Verkkosivut, verkkokaupat ja ylläpito Joensuusta – paikallisesti ja etänä.`,
+        `Näyttävät ja myyntiin suunnitellut verkkosivut yrityksille alk. ${from.fi}. Yksilöllinen suunnittelu Conversion First -periaatteella – Joensuusta, paikallisesti ja etänä.`,
     },
     en: {
-      fullTitle: 'Hades Design – Websites and online stores for businesses',
+      fullTitle: 'Websites for businesses – Hades Design, Joensuu',
       description:
-        `Modern, fast, search-optimised websites for businesses from ${from.en}. Websites, online stores and maintenance from Joensuu, Finland – locally and remotely.`,
+        `Striking websites for businesses, designed to sell, from ${from.en}. Individual design on the Conversion First principle – from Joensuu, Finland, locally and remotely.`,
     },
   },
   services: {
     fi: {
-      title: 'Palvelut – verkkosivut, verkkokaupat, uudistus ja ylläpito',
+      title: 'Palvelut – verkkosivut ja ylläpito yrityksille',
       description:
-        'Suunnittelemme ja rakennamme yrityksille verkkosivut ja verkkokaupat, uudistamme vanhat sivustot sekä hoidamme ylläpidon ja hostingin.',
+        'Suunnittelemme ja toteutamme yrityksille myyntiin keskittyviä verkkosivuja ja huolehdimme halutessasi niiden ylläpidosta ja hostingista.',
     },
     en: {
-      title: 'Services – websites, online stores, redesigns and maintenance',
+      title: 'Services – websites and maintenance for businesses',
       description:
-        'We design and build websites and online stores for businesses, redesign outdated sites and take care of maintenance and hosting.',
+        'We design and build websites for businesses that are focused on winning customers, and take care of maintenance and hosting if you wish.',
     },
   },
   websites: {
     fi: {
-      title: 'Verkkosivut yritykselle – suunnittelu ja kehitys',
+      title: 'Verkkosivujen suunnittelu yritykselle',
       description:
-        `Yksilöllisesti suunnitellut, responsiiviset ja nopeat verkkosivut yrityksellesi – ei valmiista massapohjista. Verkkosivupaketit alk. ${from.fi} (sis. ALV).`,
+        `Yksilöllisesti suunnitellut, nopeat ja myyntiin keskittyvät kotisivut yrityksellesi. Hermes ${hermes.fi}, Apollo ${apollo.fi} ja Zeus lisäominaisuuksilla (sis. ALV).`,
     },
     en: {
-      title: 'Business websites – design and development',
+      title: 'Website design for businesses',
       description:
-        `Individually designed, responsive and fast websites for your business – never from mass-produced templates. Website packages from ${from.en} (VAT incl.).`,
-    },
-  },
-  ecommerce: {
-    fi: {
-      title: 'Verkkokauppa yritykselle',
-      description:
-        'Turvallinen ja skaalautuva verkkokauppa: tuotekuvasto, maksujen käsittely, tilausten seuranta ja mobiilioptimoitu kassa.',
-    },
-    en: {
-      title: 'Online stores for businesses',
-      description:
-        'A secure, scalable online store with a product catalogue, payment processing, order tracking and a mobile-optimised checkout.',
-    },
-  },
-  redesign: {
-    fi: {
-      title: 'Verkkosivujen uudistus',
-      description:
-        'Uudistamme vanhentuneen sivuston moderniksi, nopeaksi ja helppokäyttöiseksi – menettämättä jo saavutettua hakukonenäkyvyyttä. Pyydä tarjous.',
-    },
-    en: {
-      title: 'Website redesign',
-      description:
-        'We turn an outdated website into a modern, fast and easy-to-use one – without losing the search visibility you have earned. Ask for a quote.',
+        `Individually designed, fast websites for your business, focused on winning customers. Hermes ${hermes.en}, Apollo ${apollo.en} and Zeus with add-ons (VAT incl.).`,
     },
   },
   maintenance: {
@@ -90,50 +67,50 @@ export const pageMeta: Record<PageId | 'notFound', Localized<PageMeta>> = {
   },
   work: {
     fi: {
-      title: 'Referenssit',
+      title: 'Referenssit – toteutetut verkkosivut',
       description:
         'Hades Designin toteuttamia verkkosivustoja: Pielisen Lumon matkailu- ja kulttuurisivusto, lyhytvideopalvelu Okkuva ja joensuulainen Kuljetus Jumppanen Oy.',
     },
     en: {
-      title: 'Our work',
+      title: 'Our work – websites we have built',
       description:
         'Websites built by Hades Design: Pielisen Lumo (tourism & culture), Okkuva (short-form video) and Kuljetus Jumppanen Oy (freight transport, Joensuu).',
     },
   },
   pricing: {
     fi: {
-      title: `Hinnasto – verkkosivut alk. ${from.fi}`,
+      title: `Hinnasto – verkkosivut yritykselle alk. ${from.fi}`,
       description:
-        `Hermes ${hermes.fi}, Apollo ${apollo.fi} ja Zeus – Apollo valitsemillasi lisäosilla. Laske hinta Zeus-laskurilla. Hinnat sis. ALV. Ylläpito & hosting 40 €/kk.`,
+        `Hermes ${hermes.fi} (yksisivuinen), Apollo ${apollo.fi} (monisivuinen) ja Zeus ${zeus.fi} kaikilla lisäominaisuuksilla. Vertaa paketteja ja laske hinta. Hinnat sis. ALV.`,
     },
     en: {
-      title: `Pricing – websites from ${from.en}`,
+      title: `Pricing – business websites from ${from.en}`,
       description:
-        `Hermes ${hermes.en}, Apollo ${apollo.en} and Zeus – Apollo with the add-ons you choose. Work out your price with the Zeus calculator. VAT incl. Maintenance €40/month.`,
+        `Hermes ${hermes.en} (one page), Apollo ${apollo.en} (multi-page) and Zeus ${zeus.en} with every add-on. Compare the packages and work out your price. VAT incl.`,
     },
   },
   about: {
     fi: {
       title: 'Meistä',
       description:
-        'Hades Design on joensuulainen verkkosivujen suunnittelija ja rakentaja. Teemme selkeitä, nopeita ja liiketoimintaa tukevia verkkosivuja.',
+        'Hades Design on joensuulainen verkkosivujen suunnittelija ja toteuttaja. Teemme näyttäviä, nopeita ja asiakashankintaa tukevia verkkosivuja yrityksille.',
     },
     en: {
       title: 'About us',
       description:
-        'Hades Design is a web design studio from Joensuu, Finland. We build clear, fast websites that support your business.',
+        'Hades Design is a web design studio from Joensuu, Finland. We build striking, fast websites that help businesses win customers.',
     },
   },
   contact: {
     fi: {
-      title: 'Ota yhteyttä – pyydä tarjous',
+      title: 'Ota yhteyttä – pyydä tarjous verkkosivuista',
       description:
-        'Kerro projektistasi ja pyydä ilmainen konsultointi ja tarjous. Vastaamme yleensä 24 tunnin kuluessa arkipäivisin. Puh. +358 45 108 8807.',
+        'Kerro projektistasi ja pyydä maksuton tarjous. Vastaamme yleensä 24 tunnin kuluessa arkipäivisin. Puh. +358 45 108 8807.',
     },
     en: {
-      title: 'Contact – request a quote',
+      title: 'Contact – request a quote for your website',
       description:
-        'Tell us about your project and request a free consultation and quote. We usually reply within 24 hours on business days. Tel. +358 45 108 8807.',
+        'Tell us about your project and request a free quote. We usually reply within 24 hours on business days. Tel. +358 45 108 8807.',
     },
   },
   privacy: {
@@ -161,7 +138,7 @@ export const pageMeta: Record<PageId | 'notFound', Localized<PageMeta>> = {
     },
   },
   notFound: {
-    fi: { title: 'Sivua ei löytynyt', description: 'Etsimääsi sivua ei löytynyt. Palaa etusivulle tai tutustu palveluihimme.' },
-    en: { title: 'Page not found', description: 'The page you were looking for could not be found. Return to the home page or explore our services.' },
+    fi: { title: 'Sivua ei löytynyt', description: 'Etsimääsi sivua ei löytynyt. Palaa etusivulle tai tutustu verkkosivupaketteihimme.' },
+    en: { title: 'Page not found', description: 'The page you were looking for could not be found. Return to the home page or explore our website packages.' },
   },
 }

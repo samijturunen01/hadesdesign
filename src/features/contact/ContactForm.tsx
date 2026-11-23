@@ -1,11 +1,28 @@
 import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 import { Icon } from '../../components/Icon'
-import { lineItemLabel, zeusSubtitle } from '../../components/pricing/labels'
+import { ADDON_ICONS } from '../../components/pricing/addonIcons'
+import { languagesLabel, lineItemLabel, zeusSubtitle } from '../../components/pricing/labels'
 import { TierEmblem } from '../../components/pricing/TierEmblem'
 import { isContactFormConfigured } from '../../config/site'
-import { vatShort } from '../../data/packages'
-import { getTier, lineItems, quoteToSearch, quoteTotal, type Quote } from '../../data/pricing'
-import { formatEuro, useLocale, useT } from '../../i18n/locale'
+import { recommendedLabel, vatShort } from '../../data/packages'
+import {
+  addons,
+  clampLanguages,
+  getTier,
+  hasAddons,
+  headlinePrice,
+  lineItems,
+  MAX_EXTRA_LANGUAGES,
+  NO_ADDONS,
+  quoteFromSelection,
+  quoteToSearch,
+  ZEUS_FROM_PRICE,
+  zeusTotal,
+  type AddonKey,
+  type TierId,
+  type ZeusSelection,
+} from '../../data/pricing'
+import { formatEuro, useLocale, useT, type Localized } from '../../i18n/locale'
 import { AppLink } from '../../lib/AppLink'
 import { pathFor } from '../../routes'
 import {
@@ -14,11 +31,12 @@ import {
   isTierOption,
   LIMITS,
   SERVICE_OPTIONS,
-  serviceLabels,
+  serviceOptions,
   validateContact,
   type ContactValues,
   type FieldErrors,
   type FieldName,
+  type ServiceOption,
 } from './fields'
 import { quoteSummary } from './quote'
 import { getRecaptchaToken, loadRecaptcha } from './recaptcha'
@@ -30,14 +48,18 @@ const copy = {
   phone: { fi: 'Puhelin', en: 'Phone' },
   company: { fi: 'Yritys', en: 'Company' },
   service: { fi: 'Mistä olet kiinnostunut?', en: 'What are you interested in?' },
-  choose: { fi: 'Valitse (valinnainen)', en: 'Choose (optional)' },
-  message: { fi: 'Viesti', en: 'Message' },
-  messagePlaceholder: {
-    fi: 'Kerro lyhyesti yrityksestäsi ja siitä, millaiset sivut tarvitset.',
-    en: 'Tell us briefly about your business and what kind of website you need.',
+  addons: { fi: 'Mitkä lisäominaisuudet kiinnostavat?', en: 'Which add-ons interest you?' },
+  addonsHint: {
+    fi: 'Voit valita useita tai jättää valinnan myöhemmäksi.',
+    en: 'Choose as many as you like, or decide later.',
   },
+  languageCount: { fi: 'Lisäkielten määrä', en: 'Number of additional languages' },
+  fewer: { fi: 'Yksi lisäkieli vähemmän', en: 'One language fewer' },
+  more: { fi: 'Yksi lisäkieli lisää', en: 'One more language' },
+  message: { fi: 'Viesti', en: 'Message' },
   optional: { fi: '(valinnainen)', en: '(optional)' },
   send: { fi: 'Lähetä viesti', en: 'Send message' },
+  sendQuote: { fi: 'Lähetä tarjouspyyntö', en: 'Send quote request' },
   sending: { fi: 'Lähetetään…', en: 'Sending…' },
   sentTitle: { fi: 'Kiitos, viesti on lähetetty!', en: 'Thank you, your message has been sent!' },
   sentText: {
@@ -58,30 +80,75 @@ const copy = {
   gPrivacy: { fi: 'tietosuojakäytäntöä', en: 'Privacy Policy' },
   gTerms: { fi: 'käyttöehtoja', en: 'Terms of Service' },
   gApply: { fi: '.', en: ' apply.' },
-  quoteEyebrow: { fi: 'Valitsemasi kokonaisuus', en: 'Your selection' },
+  quoteEyebrow: { fi: 'Valintasi', en: 'Your selection' },
   oneTime: { fi: 'Kertahinta', en: 'One-time price' },
+  from: { fi: 'alk.', en: 'from' },
+  noAddons: { fi: 'Valitse kiinnostavat lisäominaisuudet yllä', en: 'Pick the add-ons you are interested in above' },
   quoteNote: {
     fi: 'Valintasi lähetetään viestisi mukana. Tämä on maksuton tarjouspyyntö – ei tilaus.',
     en: 'Your selection is sent with your message. This is a free quote request – not an order.',
   },
-  editQuote: { fi: 'Muokkaa valintaa', en: 'Change selection' },
-  removeQuote: { fi: 'Poista valinta', en: 'Remove selection' },
+  openCalculator: { fi: 'Avaa Zeus-laskuri', en: 'Open the Zeus calculator' },
+  comparePackages: { fi: 'Vertaa paketteja', en: 'Compare the packages' },
+}
+
+/** The message placeholder follows the choice, so the visitor knows what is useful to tell. */
+const placeholders: Record<ServiceOption | '', Localized> = {
+  '': {
+    fi: 'Kerro lyhyesti yrityksestäsi ja siitä, millaiset verkkosivut tarvitset.',
+    en: 'Tell us briefly about your business and what kind of website you need.',
+  },
+  hermes: {
+    fi: 'Kerro lyhyesti yrityksestäsi, palveluistasi ja siitä, mitä toivot uusilta verkkosivuilta.',
+    en: 'Tell us briefly about your business, your services and what you want from your new website.',
+  },
+  apollo: {
+    fi: 'Kerro lyhyesti yrityksestäsi, palveluistasi ja siitä, mitä toivot uusilta verkkosivuilta.',
+    en: 'Tell us briefly about your business, your services and what you want from your new website.',
+  },
+  zeus: {
+    fi: 'Kerro lyhyesti yrityksestäsi ja siitä, mihin tarvitset ajanvarausta, verkkomaksuja tai muita lisäominaisuuksia.',
+    en: 'Tell us briefly about your business and what you need online booking, payments or other add-ons for.',
+  },
+  unsure: {
+    fi: 'Kerro lyhyesti yrityksestäsi ja tavoitteistasi – suosittelemme sopivimman paketin.',
+    en: 'Tell us briefly about your business and goals – we’ll recommend the package that fits.',
+  },
+  maintenance: {
+    fi: 'Kerro lyhyesti nykyisestä sivustostasi ja siitä, millaista ylläpitoa tarvitset.',
+    en: 'Tell us briefly about your current website and the maintenance you need.',
+  },
+  other: {
+    fi: 'Kerro lyhyesti, miten voimme auttaa.',
+    en: 'Tell us briefly how we can help.',
+  },
 }
 
 type Status = 'idle' | 'sending' | 'sent' | 'error'
 
-/** `initialQuote`: a package configuration brought from the pricing page (?package=…). */
-export function ContactForm({ initialQuote = null }: { initialQuote?: Quote | null }) {
+/** What the form starts with – e.g. a package brought from the pricing page (?package=…). */
+export interface ContactInitial {
+  service: ServiceOption | ''
+  /** Zeus add-ons (used when service is 'zeus'). */
+  selection: ZeusSelection
+}
+
+const isOn = (selection: ZeusSelection, id: AddonKey) => (id === 'languages' ? selection.languages > 0 : selection[id])
+
+export function ContactForm({ initial }: { initial?: ContactInitial }) {
   const t = useT()
   const locale = useLocale()
-  const [quote, setQuote] = useState<Quote | null>(initialQuote)
-  const [values, setValues] = useState<ContactValues>(() => ({ ...emptyContact, service: initialQuote?.tier ?? '' }))
+  const [values, setValues] = useState<ContactValues>(() => ({ ...emptyContact, service: initial?.service ?? '' }))
+  const [selection, setSelection] = useState<ZeusSelection>(initial?.selection ?? NO_ADDONS)
   const [errors, setErrors] = useState<FieldErrors>({})
   const [attempted, setAttempted] = useState(false)
   const [status, setStatus] = useState<Status>('idle')
   const [errorMessage, setErrorMessage] = useState('')
   const shownAt = useRef(0)
   const warmed = useRef(false)
+  // Set synchronously, so a second submit in the same tick (double click, Enter + click)
+  // cannot slip through before React re-renders with status 'sending'.
+  const submitting = useRef(false)
   const formRef = useRef<HTMLFormElement>(null)
   const successRef = useRef<HTMLDivElement>(null)
 
@@ -101,33 +168,42 @@ export function ContactForm({ initialQuote = null }: { initialQuote?: Quote | nu
     loadRecaptcha(locale).catch(() => (warmed.current = false))
   }
 
-  // The package choice travels in front of the message, so the message itself gets less room.
-  const prefixFor = (service: ContactValues['service'], withQuote: Quote | null) =>
-    isTierOption(service) ? `${quoteSummary(service, withQuote, locale)}\n\n` : ''
-  const prefix = prefixFor(values.service, quote)
+  // The choice travels in front of the message, so the message itself gets less room.
+  const prefixFor = (service: ContactValues['service'], addonSelection: ZeusSelection) => {
+    const summary = quoteSummary(service, addonSelection, locale)
+    return summary ? `${summary}\n\n` : ''
+  }
+  const prefix = prefixFor(values.service, selection)
   const messageMax = LIMITS.message.max - prefix.length
 
-  const update = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const next = { ...values, [event.target.name]: event.target.value }
-    setValues(next)
-    // Choosing another package drops the configuration brought from the pricing page.
-    const nextQuote = event.target.name === 'service' && quote && event.target.value !== quote.tier ? null : quote
-    if (nextQuote !== quote) setQuote(nextQuote)
+  const revalidate = (nextValues: ContactValues, nextSelection: ZeusSelection) => {
     if (attempted) {
-      setErrors(validateContact(next, locale, LIMITS.message.max - prefixFor(next.service, nextQuote).length))
+      setErrors(validateContact(nextValues, locale, LIMITS.message.max - prefixFor(nextValues.service, nextSelection).length))
     }
   }
 
-  const removeQuote = () => {
-    setQuote(null)
-    const next = { ...values, service: '' as const }
+  const update = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const next = { ...values, [event.target.name]: event.target.value }
     setValues(next)
-    if (attempted) setErrors(validateContact(next, locale))
+    revalidate(next, selection)
   }
+
+  const changeSelection = (next: ZeusSelection) => {
+    setSelection(next)
+    revalidate(values, next)
+  }
+  const toggleAddon = (id: AddonKey) =>
+    changeSelection(
+      id === 'languages'
+        ? { ...selection, languages: selection.languages > 0 ? 0 : 1 }
+        : { ...selection, [id]: !selection[id] },
+    )
+  const stepLanguages = (delta: 1 | -1) =>
+    changeSelection({ ...selection, languages: Math.max(1, clampLanguages(selection.languages + delta)) })
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    if (status === 'sending') return
+    if (submitting.current || status === 'sending') return
     const found = validateContact(values, locale, messageMax)
     setAttempted(true)
     setErrors(found)
@@ -142,6 +218,7 @@ export function ContactForm({ initialQuote = null }: { initialQuote?: Quote | nu
       return
     }
 
+    submitting.current = true
     setStatus('sending')
     setErrorMessage('')
     try {
@@ -164,11 +241,13 @@ export function ContactForm({ initialQuote = null }: { initialQuote?: Quote | nu
       )
       setStatus('sent')
       setValues(emptyContact)
-      setQuote(null)
+      setSelection(NO_ADDONS)
       setAttempted(false)
     } catch (error) {
       setStatus('error')
       setErrorMessage(error instanceof ContactError ? error.message : contactErrorMessage('network', locale))
+    } finally {
+      submitting.current = false
     }
   }
 
@@ -210,31 +289,118 @@ export function ContactForm({ initialQuote = null }: { initialQuote?: Quote | nu
       </p>
     ) : null
 
+  const tier: TierId | null = isTierOption(values.service) ? values.service : null
+
   return (
     <form ref={formRef} className="contact-form glass" noValidate onSubmit={onSubmit} onFocus={warmUp}>
-      {quote && (
-        <section className={`quote-card tier--${quote.tier}`} aria-labelledby="quote-card-title">
+      <fieldset className="choice-group">
+        <legend>
+          {t(copy.service)} <span className="optional">{t(copy.optional)}</span>
+        </legend>
+        <div className="choices">
+          {SERVICE_OPTIONS.map((option) => (
+            <label key={option} className={`choice${isTierOption(option) ? ` tier--${option}` : ''}`}>
+              <input
+                type="radio"
+                name="service"
+                value={option}
+                checked={values.service === option}
+                onChange={update}
+                className="choice__input"
+              />
+              <span className="choice__name">
+                {isTierOption(option) && <TierEmblem tier={option} className="choice__emblem" />}
+                {t(serviceOptions[option].label)}
+                {option === 'apollo' && <span className="choice__badge">{t(recommendedLabel)}</span>}
+              </span>
+              <span className="choice__hint">{t(serviceOptions[option].hint)}</span>
+            </label>
+          ))}
+        </div>
+        {error('service')}
+      </fieldset>
+
+      {values.service === 'zeus' && (
+        <fieldset className="choice-group tier--zeus">
+          <legend>
+            {t(copy.addons)} <span className="optional">{t(copy.addonsHint)}</span>
+          </legend>
+          <div className="addon-choices">
+            {addons.map((addon) => (
+              <label key={addon.id} className="addon-choice">
+                <input
+                  type="checkbox"
+                  checked={isOn(selection, addon.id)}
+                  onChange={() => toggleAddon(addon.id)}
+                  className="choice__input"
+                />
+                <Icon name={ADDON_ICONS[addon.id]} />
+                <span className="addon-choice__name">{t(addon.short)}</span>
+                <span className="addon-choice__price">
+                  +{formatEuro(addon.price, locale)}
+                  {addon.unit && <small> {t(addon.unit)}</small>}
+                </span>
+              </label>
+            ))}
+          </div>
+          {selection.languages > 0 && (
+            <div className="stepper form-stepper" role="group" aria-label={t(copy.languageCount)}>
+              <button
+                type="button"
+                className="stepper__btn"
+                aria-label={t(copy.fewer)}
+                aria-disabled={selection.languages <= 1}
+                onClick={() => stepLanguages(-1)}
+              >
+                <Icon name="minus" />
+              </button>
+              <span className="stepper__value" aria-hidden="true">
+                {selection.languages}
+              </span>
+              <button
+                type="button"
+                className="stepper__btn"
+                aria-label={t(copy.more)}
+                aria-disabled={selection.languages >= MAX_EXTRA_LANGUAGES}
+                onClick={() => stepLanguages(1)}
+              >
+                <Icon name="plus" />
+              </button>
+              <span className="stepper__state" aria-live="polite">
+                {languagesLabel(selection.languages, locale)}
+              </span>
+            </div>
+          )}
+        </fieldset>
+      )}
+
+      {tier && (
+        <div className={`quote-card tier--${tier}`}>
           <div className="quote-card__head">
             <span className="tier__emblem">
-              <TierEmblem tier={quote.tier} />
+              <TierEmblem tier={tier} />
             </span>
             <div className="quote-card__title">
               <p className="quote-card__eyebrow">{t(copy.quoteEyebrow)}</p>
-              <h2 id="quote-card-title" className="quote-card__name">
-                {getTier(quote.tier).name}
-              </h2>
-              <p className="quote-card__sub">{zeusSubtitle(quote.selection, locale) ?? t(getTier(quote.tier).kind)}</p>
+              <p className="quote-card__name">{getTier(tier).name}</p>
+              <p className="quote-card__sub">
+                {tier === 'zeus' ? (zeusSubtitle(selection, locale) ?? t(copy.noAddons)) : t(getTier(tier).kind)}
+              </p>
             </div>
-            <p className="quote-card__total">
-              {formatEuro(quoteTotal(quote), locale)}
+            <p className="quote-card__total" aria-live="polite">
+              {tier === 'zeus' && !hasAddons(selection) && `${t(copy.from)} `}
+              {formatEuro(
+                tier === 'zeus' ? (hasAddons(selection) ? zeusTotal(selection) : ZEUS_FROM_PRICE) : headlinePrice(tier),
+                locale,
+              )}
               <small>
                 {t(copy.oneTime)} · {t(vatShort)}
               </small>
             </p>
           </div>
-          {quote.tier === 'zeus' && (
+          {tier === 'zeus' && hasAddons(selection) && (
             <ul className="quote-card__lines">
-              {lineItems(quote.selection).map((item) => (
+              {lineItems(selection).map((item) => (
                 <li key={item.id}>
                   <span>{lineItemLabel(item, locale)}</span>
                   <span>{formatEuro(item.amount, locale)}</span>
@@ -245,18 +411,19 @@ export function ContactForm({ initialQuote = null }: { initialQuote?: Quote | nu
           <p className="quote-card__note">{t(copy.quoteNote)}</p>
           <div className="quote-card__actions">
             <AppLink
-              to={`${pathFor('pricing', locale)}${quote.tier === 'hermes' ? '#paketit' : `${quoteToSearch(quote)}#laskuri`}`}
+              to={
+                tier === 'zeus'
+                  ? `${pathFor('pricing', locale)}${quoteToSearch(quoteFromSelection(selection))}#laskuri`
+                  : `${pathFor('pricing', locale)}#vertailu`
+              }
               className="link"
             >
-              {t(copy.editQuote)} <Icon name="arrow" />
+              {t(tier === 'zeus' ? copy.openCalculator : copy.comparePackages)} <Icon name="arrow" />
             </AppLink>
-            <button type="button" className="quote-card__remove" onClick={removeQuote}>
-              <Icon name="close" />
-              {t(copy.removeQuote)}
-            </button>
           </div>
-        </section>
+        </div>
       )}
+
       <div className="form-grid">
         <div className="field">
           <label htmlFor="contact-name">{t(copy.name)}</label>
@@ -283,24 +450,12 @@ export function ContactForm({ initialQuote = null }: { initialQuote?: Quote | nu
           {error('company')}
         </div>
         <div className="field field--full">
-          <label htmlFor="contact-service">{t(copy.service)}</label>
-          <select {...field('service')}>
-            <option value="">{t(copy.choose)}</option>
-            {SERVICE_OPTIONS.map((option) => (
-              <option key={option} value={option}>
-                {t(serviceLabels[option])}
-              </option>
-            ))}
-          </select>
-          {error('service')}
-        </div>
-        <div className="field field--full">
           <label htmlFor="contact-message">{t(copy.message)}</label>
           <textarea
             {...field('message')}
             rows={6}
             maxLength={messageMax}
-            placeholder={t(copy.messagePlaceholder)}
+            placeholder={t(placeholders[values.service])}
             required
           />
           <div className="field-row">
@@ -327,7 +482,11 @@ export function ContactForm({ initialQuote = null }: { initialQuote?: Quote | nu
 
       <div className="form-footer">
         <button type="submit" className="btn btn--primary" disabled={status === 'sending'} data-magnetic="">
-          <span>{status === 'sending' ? t(copy.sending) : t(copy.send)}</span>
+          <span>
+            {status === 'sending'
+              ? t(copy.sending)
+              : t(tier || values.service === 'unsure' ? copy.sendQuote : copy.send)}
+          </span>
           <Icon name="arrow" />
         </button>
         <p className="field-hint">

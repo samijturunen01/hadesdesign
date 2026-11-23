@@ -36,8 +36,8 @@ export interface SeoData {
 }
 
 const DEFAULT_IMAGE: Record<Locale, { path: string; alt: string }> = {
-  fi: { path: 'og/hades-design-fi.png', alt: 'Hades Design – verkkosivut, verkkokaupat ja ylläpito' },
-  en: { path: 'og/hades-design-en.png', alt: 'Hades Design – websites, online stores and maintenance' },
+  fi: { path: 'og/hades-design-fi.png', alt: 'Hades Design – Suunniteltu näyttämään hyvältä. Rakennettu myymään.' },
+  en: { path: 'og/hades-design-en.png', alt: 'Hades Design – Designed to look good. Built to sell.' },
 }
 
 export function buildSeo(input: SeoInput, locale: Locale, pathname: string): SeoData {

@@ -168,11 +168,12 @@ describe('copy integrity', () => {
   })
 
   it('every tier and add-on has Finnish and English copy', () => {
-    for (const t of tiers) for (const key of ['kind', 'myth', 'description', 'idealFor']) {
+    for (const t of tiers) for (const key of ['kind', 'myth', 'description', 'idealFor', 'includesLead']) {
       assert.ok(t[key].fi && t[key].en, `${t.id}.${key}`)
     }
     for (const t of tiers) assert.equal(t.features.fi.length, t.features.en.length, `${t.id} features`)
-    for (const a of addons) for (const key of ['name', 'summary', 'what', 'when', 'note']) {
+    for (const t of tiers) for (const s of t.specs) assert.ok(s.label.fi && s.label.en, `${t.id}.specs.${s.key}`)
+    for (const a of addons) for (const key of ['name', 'short', 'summary', 'what', 'when', 'note']) {
       assert.ok(a[key].fi && a[key].en, `${a.id}.${key}`)
     }
   })
@@ -181,5 +182,68 @@ describe('copy integrity', () => {
     for (const group of comparison) for (const row of group.rows) {
       assert.deepEqual(Object.keys(row.cells).sort(), ['apollo', 'hermes', 'zeus'])
     }
+  })
+})
+
+describe('package positioning (owner’s brief)', () => {
+  const tier = (id) => tiers.find((t) => t.id === id)
+
+  it('Hermes is one page, Apollo multi-page, Zeus is Apollo + add-ons', () => {
+    assert.equal(tier('hermes').kind.fi, 'Yksisivuinen verkkosivusto')
+    assert.equal(tier('apollo').kind.fi, 'Monisivuinen verkkosivusto')
+    assert.match(tier('zeus').kind.fi, /^Apollo \+ valinnaiset lisäominaisuudet$/)
+  })
+
+  it('Hermes and Apollo share every headline spec except the contact form', () => {
+    const shared = (id) => tier(id).specs.filter((s) => s.shared).map((s) => s.label.fi)
+    assert.deepEqual(shared('hermes'), shared('apollo'))
+    assert.ok(shared('hermes').includes('Conversion First -suunnittelu'))
+    assert.ok(shared('hermes').includes('Premium-ulkoasu'))
+    const form = (id) => tier(id).specs.find((s) => s.key === 'form').label.fi
+    assert.equal(form('hermes'), 'Yksinkertainen yhteydenottolomake')
+    assert.equal(form('apollo'), 'Monipuolinen yhteydenottolomake')
+  })
+
+  it('the quality group of the comparison is identical for all three packages', () => {
+    const quality = comparison[0]
+    assert.match(quality.title.fi, /Sama laatu/)
+    for (const row of quality.rows) {
+      assert.deepEqual(row.cells.hermes, row.cells.apollo, row.label.fi)
+      assert.deepEqual(row.cells.apollo, row.cells.zeus, row.label.fi)
+      assert.notEqual(row.cells.hermes, false, `${row.label.fi} must not be missing from Hermes`)
+    }
+    const labels = quality.rows.map((r) => r.label.fi).join(' | ')
+    for (const required of ['Conversion First', 'premium-ulkoasu', 'Responsiivinen', 'Animaatiot', 'Hakukoneoptimointi']) {
+      assert.ok(labels.includes(required), `quality group lists ${required}`)
+    }
+  })
+
+  it('structure and form rows separate Hermes from Apollo and Zeus', () => {
+    const rows = Object.fromEntries(comparison[1].rows.map((r) => [r.label.fi, r.cells]))
+    assert.deepEqual(rows['Yksisivuinen verkkosivusto'], { hermes: true, apollo: false, zeus: false })
+    assert.deepEqual(rows['Monisivuinen verkkosivusto'], { hermes: false, apollo: true, zeus: true })
+    assert.deepEqual(rows['Yksinkertainen yhteydenottolomake'], { hermes: true, apollo: false, zeus: false })
+    assert.deepEqual(rows['Monipuolinen, yrityskohtainen lomake'], { hermes: false, apollo: true, zeus: true })
+  })
+
+  it('Zeus add-ons are optional – never included in Hermes or the Apollo base', () => {
+    const group = comparison.at(-1)
+    assert.equal(group.rows.length, addons.length)
+    for (const row of group.rows) {
+      assert.equal(row.cells.hermes, false)
+      assert.equal(row.cells.apollo, false)
+      assert.ok(row.cells.zeus && typeof row.cells.zeus === 'object' && 'addon' in row.cells.zeus)
+    }
+    const nbsp = String.fromCharCode(0xa0)
+    assert.ok(group.lead.fi.includes(`1${nbsp}000${nbsp}€`), group.lead.fi)
+  })
+
+  it('no package is described as basic or lower quality', () => {
+    const text = tiers
+      .flatMap((t) => [t.kind, t.description, t.idealFor, t.includesLead, ...t.specs.map((s) => s.label)])
+      .flatMap((l) => [l.fi, l.en])
+      .concat(tiers.flatMap((t) => [...t.features.fi, ...t.features.en]))
+      .join('\n')
+    assert.doesNotMatch(text, /\bperus|kevyt|halpa|yksinkertaistettu|\bbasic\b|\blite\b|cheap|budget/i)
   })
 })

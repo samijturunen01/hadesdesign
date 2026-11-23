@@ -1,29 +1,39 @@
 import { lineItemLabel, zeusSubtitle } from '../../components/pricing/labels'
 import { vatShort } from '../../data/packages'
-import { getTier, headlinePrice, lineItems, quoteTotal, ZEUS_FROM_PRICE, type Quote, type TierId } from '../../data/pricing'
+import { getTier, hasAddons, headlinePrice, lineItems, zeusTotal, ZEUS_FROM_PRICE, type ZeusSelection } from '../../data/pricing'
 import { formatEuro, type Locale } from '../../i18n/locale'
+import type { ServiceOption } from './fields'
 
 /**
- * The chosen package as plain text. It is sent in front of the message, so the
- * inbox shows the exact package and add-ons whatever the backend's labels say.
- * `quote` is the configuration brought from the pricing page, if any.
+ * The visitor's choice as plain text. It is sent in front of the message, so
+ * the inbox shows the exact package and add-ons whatever the backend's labels
+ * say. Empty for choices the backend label already describes exactly.
+ * `selection` = the Zeus add-ons (ignored for other choices).
  */
-export function quoteSummary(tier: TierId, quote: Quote | null, locale: Locale): string {
+export function quoteSummary(service: ServiceOption | '', selection: ZeusSelection, locale: Locale): string {
   const fi = locale === 'fi'
   const heading = fi ? 'Valittu paketti' : 'Chosen package'
   const vat = vatShort[locale]
 
-  if (tier === 'zeus' && quote?.tier === 'zeus') {
-    const lines = lineItems(quote.selection).map((item) => `• ${lineItemLabel(item, locale)}: ${formatEuro(item.amount, locale)}`)
+  if (service === 'zeus') {
+    if (!hasAddons(selection)) {
+      return `${heading}: Zeus – ${fi ? 'Apollo + lisäominaisuudet, alk.' : 'Apollo + add-ons, from'} ${formatEuro(ZEUS_FROM_PRICE, locale)} (${vat}). ${
+        fi ? 'Lisäominaisuuksia ei vielä valittu.' : 'No add-ons chosen yet.'
+      }`
+    }
+    const lines = lineItems(selection).map((item) => `• ${lineItemLabel(item, locale)}: ${formatEuro(item.amount, locale)}`)
     return [
-      `${heading}: Zeus (${zeusSubtitle(quote.selection, locale) ?? 'Apollo'})`,
+      `${heading}: Zeus (${zeusSubtitle(selection, locale) ?? 'Apollo'})`,
       ...lines,
-      `${fi ? 'Laskurin mukainen hinta' : 'Calculator price'}: ${formatEuro(quoteTotal(quote), locale)} (${vat})`,
+      `${fi ? 'Yhteensä' : 'Total'}: ${formatEuro(zeusTotal(selection), locale)} (${vat})`,
     ].join('\n')
   }
-  if (tier === 'zeus') {
-    return `${heading}: Zeus – ${fi ? 'Apollo + lisäosat, alk.' : 'Apollo + add-ons, from'} ${formatEuro(ZEUS_FROM_PRICE, locale)} (${vat})`
+  if (service === 'hermes' || service === 'apollo') {
+    const chosen = getTier(service)
+    return `${heading}: ${chosen.name} – ${chosen.kind[locale]}, ${formatEuro(headlinePrice(service), locale)} (${vat})`
   }
-  const chosen = getTier(tier)
-  return `${heading}: ${chosen.name} – ${chosen.kind[locale]}, ${formatEuro(headlinePrice(tier), locale)} (${vat})`
+  if (service === 'unsure') {
+    return `${heading}: ${fi ? 'En osaa vielä sanoa – toivon suositusta sopivasta paketista.' : 'Not sure yet – I would like a recommendation.'}`
+  }
+  return ''
 }

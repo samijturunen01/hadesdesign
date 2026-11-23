@@ -5,7 +5,8 @@ import { formatEuro, type Locale } from '../../i18n/locale'
 const plural = (n: number, locale: Locale, fi: [string, string], en: [string, string]) =>
   `${n} ${(locale === 'fi' ? fi : en)[n === 1 ? 0 : 1]}`
 
-export const addonsLabel = (n: number, locale: Locale) => plural(n, locale, ['lisäosa', 'lisäosaa'], ['add-on', 'add-ons'])
+export const addonsLabel = (n: number, locale: Locale) =>
+  plural(n, locale, ['lisäominaisuus', 'lisäominaisuutta'], ['add-on', 'add-ons'])
 
 export const languagesLabel = (n: number, locale: Locale) =>
   plural(n, locale, ['lisäkieli', 'lisäkieltä'], ['additional language', 'additional languages'])
@@ -20,7 +21,7 @@ export function lineItemLabel(item: LineItem, locale: Locale): string {
   return getAddon(item.id).name[locale]
 }
 
-/** "Apollo + 2 lisäosaa" for Zeus; null when nothing is added (it is plain Apollo then). */
+/** "Apollo + 2 lisäominaisuutta" for Zeus; null when nothing is added (it is plain Apollo then). */
 export function zeusSubtitle(selection: ZeusSelection, locale: Locale): string | null {
   return tierForSelection(selection) === 'zeus' ? `Apollo + ${addonsLabel(addonCount(selection), locale)}` : null
 }

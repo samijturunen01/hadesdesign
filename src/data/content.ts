@@ -1,87 +1,135 @@
 /**
- * Shared, verified content blocks used on several pages: the four reasons to
+ * Shared, verified content blocks used on several pages: benefits, reasons to
  * choose Hades Design, the process, values, approach, FAQs and the testimonial.
+ *
+ * Only verified facts and policies (docs/CONTENT-SOURCES.md). Not documented –
+ * so never promised here: delivery times, number of revisions, domain
+ * registration, included support periods or payment schedules beyond
+ * "invoice on completion".
  */
 import { formatEuro, type Localized } from '../i18n/locale'
-import { NO_ADDONS, PRICES, ZEUS_FULL_PRICE, zeusTotal } from './pricing'
+import { maintenancePlan } from './packages'
+import { NO_ADDONS, PRICES, ZEUS_FROM_PRICE, ZEUS_FULL_PRICE, zeusTotal } from './pricing'
 
 export interface TitledText {
   title: Localized
   text: Localized
 }
 
-/** "Miksi valita Hades Design?" */
+const eur = (amount: number): Localized => ({ fi: formatEuro(amount, 'fi'), en: formatEuro(amount, 'en') })
+const hermes = eur(PRICES.hermes)
+const apollo = eur(PRICES.apollo)
+const apolloBooking = eur(zeusTotal({ ...NO_ADDONS, booking: true }))
+const zeusFrom = eur(ZEUS_FROM_PRICE)
+const zeusFull = eur(ZEUS_FULL_PRICE)
+const apolloPremium = eur(PRICES.apollo - PRICES.hermes)
+const maintenanceMonth = eur(maintenancePlan.monthly)
+const maintenanceYear = eur(maintenancePlan.yearly)
+
+/** What every site we build does for the business – the same in every package. */
 export const pillars: TitledText[] = [
   {
-    title: { fi: 'Salamannopea', en: 'Lightning fast' },
+    title: { fi: 'Herättää luottamuksen heti', en: 'Earns trust at first sight' },
     text: {
-      fi: 'Optimoimme sivut mahdollisimman nopeiksi, jotta kävijä ei joudu odottamaan.',
-      en: 'We optimise every site to be as fast as possible, so visitors never wait.',
+      fi: 'Huoliteltu, yrityksesi näköinen ulkoasu kertoo ensisilmäyksellä, että asiat hoituvat ammattitaidolla.',
+      en: 'A polished design that looks like your business shows at first glance that you do things properly.',
     },
   },
   {
-    title: { fi: 'Luotettava ja turvallinen', en: 'Reliable & secure' },
+    title: { fi: 'Auttaa asiakkaita löytämään sinut', en: 'Helps customers find you' },
     text: {
-      fi: 'Rakennamme sivut tietoturvaa noudattaen – yhteys on aina suojattu koko käynnin ajan.',
-      en: 'We build with security in mind – the connection stays protected throughout every visit.',
+      fi: 'Hakukoneoptimointi alusta asti: sivusto rakennetaan niin, että hakukoneet ymmärtävät, mitä tarjoat ja missä.',
+      en: 'Search engine optimisation from day one: the site is built so search engines understand what you offer and where.',
     },
   },
   {
-    title: { fi: 'Hakukoneystävällinen', en: 'Search-engine friendly' },
+    title: { fi: 'Latautuu hetkessä', en: 'Loads in an instant' },
     text: {
-      fi: 'Jokainen rakentamamme sivusto on hakukoneoptimoitu alusta alkaen, jotta se sijoittuu hakutuloksissa.',
-      en: 'Every site we build is search-engine optimised from day one, so it can rank in search results.',
+      fi: 'Nopeat sivut pitävät kävijän kiinnostuneena. Asiakkaasi löytävät tarvitsemansa tiedot odottamatta.',
+      en: 'Fast pages keep visitors interested. Your customers find what they need without waiting.',
     },
   },
   {
-    title: { fi: 'Täysin responsiivinen', en: 'Fully responsive' },
+    title: { fi: 'Toimii jokaisella laitteella', en: 'Works on every device' },
     text: {
-      fi: 'Sivustosi toimii moitteettomasti kaikilla laitteilla – älypuhelimista suuriin näyttöihin.',
-      en: 'Your site works flawlessly on every device – from smartphones to large screens.',
+      fi: 'Moni etsii palveluita puhelimella. Sivustosi on yhtä selkeä ja helppokäyttöinen pienellä näytöllä kuin suurella.',
+      en: 'Many people look for services on their phone. Your site is just as clear and easy to use on a small screen as on a large one.',
     },
   },
 ]
 
 export const pillarsIntro: Localized = {
-  fi: 'Suunnittelemme yrityksellesi selkeät verkkosivut, jotka näyttävät ammattimaisilta ja tarjoavat asiakkaillesi sujuvan käyntikokemuksen.',
-  en: 'We design clear websites for your business that look professional and give your customers a smooth experience.',
+  fi: 'Jokainen toteuttamamme sivusto rakennetaan näiden periaatteiden varaan – paketista riippumatta.',
+  en: 'Every site we build stands on these principles – whichever package you choose.',
 }
+
+/** "Miksi Hades Design" – verified facts about working with us. */
+export const reasons: TitledText[] = [
+  {
+    title: { fi: 'Yksilöllinen suunnittelu', en: 'Designed for you' },
+    text: {
+      fi: 'Jokainen sivusto suunnitellaan yrityksesi brändin, asiakkaiden ja tavoitteiden mukaan – ei valmiista massapohjista.',
+      en: 'Every site is designed around your brand, customers and goals – never from mass-produced templates.',
+    },
+  },
+  {
+    title: { fi: 'Selkeät hinnat etukäteen', en: 'Clear prices up front' },
+    text: {
+      fi: `Hermes ${hermes.fi}, Apollo ${apollo.fi} ja Zeus-lisäominaisuudet kiinteillä hinnoilla. Tiedät kustannukset ennen kuin päätät.`,
+      en: `Hermes ${hermes.en}, Apollo ${apollo.en} and fixed prices for the Zeus add-ons. You know the cost before you decide.`,
+    },
+  },
+  {
+    title: { fi: 'Maksat valmiista', en: 'Pay when it’s done' },
+    text: {
+      fi: 'Lasku lähetetään, kun projekti on valmis. Valmis verkkosivusto ja sen sisältö ovat sinun, kun maksu on suoritettu.',
+      en: 'The invoice is sent once the project is completed. The finished website and its content are yours once payment has been made.',
+    },
+  },
+  {
+    title: { fi: 'Nopea vastaus', en: 'A quick reply' },
+    text: {
+      fi: 'Vastaamme yleensä 24 tunnin kuluessa arkipäivisin. Toimimme Joensuusta – paikallisesti ja etänä.',
+      en: 'We usually reply within 24 hours on business days. We work from Joensuu – locally and remotely.',
+    },
+  },
+]
 
 /** The five-step process. */
 export const processSteps: TitledText[] = [
   {
     title: { fi: 'Kartoitus', en: 'Discovery' },
     text: {
-      fi: 'Perehdymme liiketoimintaasi, tavoitteisiisi ja kohderyhmääsi, jotta sivut puhuttelevat juuri sinun asiakkaitasi.',
-      en: 'We get to know your business, goals and target audience so the site speaks to your customers.',
+      fi: 'Perehdymme liiketoimintaasi, tavoitteisiisi ja asiakkaisiisi – ja autamme valitsemaan sopivan paketin.',
+      en: 'We get to know your business, goals and customers – and help you choose the right package.',
     },
   },
   {
     title: { fi: 'Suunnittelu', en: 'Design' },
     text: {
-      fi: 'Luomme sivustostasi demoversion, jota hiotaan tarpeidesi mukaan.',
-      en: 'We create a demo version of your website and refine it to fit your needs.',
+      fi: 'Luomme sivustostasi demoversion, jota hiotaan palautteesi perusteella.',
+      en: 'We create a demo version of your website and refine it based on your feedback.',
     },
   },
   {
-    title: { fi: 'Kehitys', en: 'Development' },
+    title: { fi: 'Toteutus', en: 'Development' },
     text: {
-      fi: 'Herätämme sivuston eloon modernilla koodilla.',
-      en: 'We bring the site to life with modern code.',
+      fi: 'Rakennamme sivuston nopeaksi, turvalliseksi ja hakukoneystävälliseksi.',
+      en: 'We build the site to be fast, secure and search-engine friendly.',
     },
   },
   {
     title: { fi: 'Julkaisu', en: 'Launch' },
     text: {
-      fi: 'Testaamme kaiken perusteellisesti, jotta julkaisu sujuu ja kaikki varmasti toimii.',
-      en: 'We test everything thoroughly so the launch goes smoothly and everything works.',
+      fi: 'Testaamme kaiken perusteellisesti eri laitteilla, jotta julkaisu sujuu ja kaikki varmasti toimii.',
+      en: 'We test everything thoroughly on different devices so the launch goes smoothly and everything works.',
     },
   },
   {
-    title: { fi: 'Tuki', en: 'Support' },
+    title: { fi: 'Julkaisun jälkeen', en: 'After launch' },
     text: {
-      fi: 'Jatkuva tuki pitää sivustosi toiminnassa ja reagoi nopeasti muutoksiin.',
-      en: 'Ongoing support keeps your site running and responds quickly to change.',
+      fi: 'Halutessasi jatkamme yhteistyötä ylläpitosopimuksella, joka pitää sivustosi turvallisena ja ajan tasalla.',
+      en: 'If you wish, we keep working together on a maintenance plan that keeps your site secure and up to date.',
     },
   },
 ]
@@ -148,84 +196,139 @@ export interface Faq {
   a: Localized
 }
 
-const eur = (amount: number): Localized => ({ fi: formatEuro(amount, 'fi'), en: formatEuro(amount, 'en') })
-const hermes = eur(PRICES.hermes)
-const apollo = eur(PRICES.apollo)
-const apolloBooking = eur(zeusTotal({ ...NO_ADDONS, booking: true }))
-const zeusFull = eur(ZEUS_FULL_PRICE)
-
-export const pricingFaq: Faq[] = [
-  {
+const faq = {
+  whichPackage: {
     q: { fi: 'Mikä paketti sopii minulle?', en: 'Which package is right for me?' },
     a: {
-      fi: `Jos yksi selkeä sivu riittää kertomaan palvelusi, Hermes (${hermes.fi}) on hyvä valinta. Useimmille yrityksille suosittelemme Apolloa (${apollo.fi}): jokainen palvelu saa oman sivunsa, ja asiakaspolku suunnitellaan koko sivustolle. Zeus kannattaa, kun tarvitset ajanvarausta, verkkomaksuja, analytiikkaa tai kieliversioita. Jos et ole varma, kerro tarpeistasi – suosittelemme sopivinta vaihtoehtoa, emme kalleinta.`,
-      en: `If one clear page is enough to present your services, Hermes (${hermes.en}) is a good choice. For most businesses we recommend Apollo (${apollo.en}): every service gets its own page and the customer journey is planned across the whole site. Zeus makes sense when you need online booking, payments, analytics or language versions. Not sure? Tell us what you need – we recommend the best fit, not the most expensive option.`,
+      fi: `Jos yrityksesi palvelut ja tarina mahtuvat selkeästi yhdelle sivulle, Hermes (${hermes.fi}) on hyvä valinta. Useimmille yrityksille suosittelemme Apolloa (${apollo.fi}): jokainen palvelu saa oman sivunsa ja lomake räätälöidään liiketoimintasi mukaan. Zeus kannattaa, kun tarvitset ajanvarausta, verkkomaksuja, analytiikkaa tai kieliversioita. Jos et ole varma, kerro tarpeistasi – suosittelemme sopivinta vaihtoehtoa, emme kalleinta.`,
+      en: `If your services and story fit clearly on one page, Hermes (${hermes.en}) is a good choice. For most businesses we recommend Apollo (${apollo.en}): every service gets its own page and the form is tailored to your business. Zeus makes sense when you need online booking, payments, analytics or language versions. Not sure? Tell us what you need – we recommend the best fit, not the most expensive option.`,
     },
   },
-  {
-    q: { fi: 'Onko Hermes laadultaan heikompi kuin Apollo?', en: 'Is Hermes lower quality than Apollo?' },
+  onePageVsMulti: {
+    q: {
+      fi: 'Mitä eroa on yksisivuisella ja monisivuisella verkkosivustolla?',
+      en: 'What is the difference between a one-page and a multi-page website?',
+    },
     a: {
-      fi: 'Ei. Jokainen paketti suunnitellaan samalla huolellisuudella ja Conversion First -periaatteella. Ero on laajuudessa: Hermes on yksi tiivis sivu, Apollo monisivuinen kokonaisuus omalla luovalla konseptilla, ja Zeus lisää Apolloon valitsemasi toiminnot.',
-      en: 'No. Every package is designed with the same care and the same Conversion First principle. The difference is scope: Hermes is one focused page, Apollo a multi-page site with its own creative direction, and Zeus adds the functionality you choose to Apollo.',
+      fi: 'Yksisivuisessa verkkosivustossa (Hermes) kaikki olennainen – yritysesittely, palvelut, referenssit ja yhteystiedot – on yhdellä selkeällä, vieritettävällä sivulla. Monisivuisessa verkkosivustossa (Apollo ja Zeus) palveluilla, yritysesittelyllä ja yhteydenotolla on omat sivunsa. Silloin jokaisesta palvelusta voi kertoa laajemmin, ja jokainen sivu voidaan optimoida hakukoneille omilla hakusanoillaan.',
+      en: 'On a one-page website (Hermes) everything that matters – introduction, services, references and contact details – is on one clear, scrolling page. On a multi-page website (Apollo and Zeus) your services, company and contact each have their own pages. That leaves room to say more about every service, and each page can be optimised for search engines with its own keywords.',
     },
   },
-  {
-    q: { fi: 'Pitääkö Zeukseen valita kaikki lisäosat?', en: 'Do I have to take every Zeus add-on?' },
+  hermesQuality: {
+    q: { fi: 'Onko Hermes yhtä laadukas kuin Apollo?', en: 'Is Hermes as high quality as Apollo?' },
     a: {
-      fi: `Ei. Zeus on Apollo-verkkosivusto, johon valitset vain tarvitsemasi lisäosat, ja maksat vain niistä. Esimerkiksi Apollo ja ajanvaraus maksavat yhteensä ${apolloBooking.fi}. Kaikki neljä lisäosaa yhdellä lisäkielellä maksavat ${zeusFull.fi}.`,
-      en: `No. Zeus is the Apollo website with only the add-ons you need, and you only pay for those. Apollo with online booking, for example, costs ${apolloBooking.en} in total. All four add-ons with one additional language cost ${zeusFull.en}.`,
+      fi: 'On. Hermes suunnitellaan samalla huolellisuudella, samalla Conversion First -periaatteella ja samalla tekniikalla kuin Apollo: yksilöllinen premium-ulkoasu, animaatiot tarpeen mukaan, responsiivisuus, hakukoneoptimointi ja nopeus kuuluvat molempiin. Eroja on kaksi: Hermes on yksisivuinen, ja siinä on yksinkertainen yhteydenottolomake.',
+      en: 'Yes. Hermes is designed with the same care, the same Conversion First principle and the same technology as Apollo: a custom premium design, animations where relevant, responsive layouts, search engine optimisation and speed are part of both. There are two differences: Hermes is a one-page website, and it has a simple contact form.',
     },
   },
-  {
-    q: { fi: 'Onko laskurin hinta lopullinen?', en: 'Is the calculator price final?' },
+  apolloPrice: {
+    q: { fi: `Miksi Apollo maksaa ${apolloPremium.fi} enemmän?`, en: `Why does Apollo cost ${apolloPremium.en} more?` },
     a: {
-      fi: 'Laskuri näyttää pakettien ja lisäosien hinnat sellaisinaan. Ennen työn aloittamista vahvistamme tarjouksessa kokonaisuuden, aikataulun ja mahdolliset ulkoiset kulut, kuten maksupalvelun maksut. Jos tarvitset jotain pakettien ulkopuolelta, arvioimme sen erikseen. Laskuri ei tee tilausta – tarjouspyyntö on maksuton ja sitoumukseton.',
-      en: 'The calculator shows the package and add-on prices as they are. Before any work starts, we confirm the scope, schedule and any external costs, such as payment provider fees, in the quote. Anything beyond the packages is estimated separately. The calculator does not place an order – a quote request is free and non-binding.',
+      fi: 'Apollossa on useita sivuja, ja jokainen niistä suunnitellaan ja optimoidaan erikseen: omat palvelusivut, yrityssivu ja yhteydenottosivu. Lisäksi Apollon yhteydenottolomake räätälöidään yrityksesi palveluiden mukaan, jotta saat yhteydenottoja, joihin on helppo vastata. Hintaero ei tule ulkoasusta – se on yhtä huolellinen molemmissa.',
+      en: 'Apollo has several pages, and each one is designed and optimised separately: dedicated service pages, a company page and a contact page. Its contact form is also tailored to your services, so the enquiries you receive are easy to answer. The difference in price does not come from the design – that is just as careful in both.',
     },
   },
-  {
-    q: { fi: 'Mitä maksutapoja hyväksytte?', en: 'Which payment methods do you accept?' },
+  zeusPartial: {
+    q: { fi: 'Voinko valita vain osan Zeus-lisäominaisuuksista?', en: 'Can I choose only some of the Zeus add-ons?' },
     a: {
-      fi: 'Hyväksymme pankkisiirrot. Lasku lähetetään, kun projekti on valmis.',
-      en: 'We accept bank transfers. The invoice is sent once the project is completed.',
+      fi: `Voit. Zeus on Apollo-verkkosivusto, johon valitset vain tarvitsemasi lisäominaisuudet, ja maksat vain niistä. Esimerkiksi Apollo ja ajanvaraus maksavat yhteensä ${apolloBooking.fi}, ja edullisin Zeus maksaa ${zeusFrom.fi}. Kaikki neljä lisäominaisuutta yhdellä lisäkielellä maksavat ${zeusFull.fi}.`,
+      en: `Yes. Zeus is the Apollo website with only the add-ons you need, and you only pay for those. Apollo with online booking, for example, costs ${apolloBooking.en} in total, and the most affordable Zeus is ${zeusFrom.en}. All four add-ons with one additional language cost ${zeusFull.en}.`,
     },
   },
-  {
+  addLater: {
+    q: { fi: 'Voinko lisätä Zeuksen ominaisuuksia myöhemmin?', en: 'Can I add Zeus features later?' },
+    a: {
+      fi: 'Voit. Voit aloittaa Apollolla ja lisätä esimerkiksi ajanvarauksen tai kieliversion myöhemmin – myöhemmin lisättävän ominaisuuden toteutus ja hinta vahvistetaan tarjouksessa. Myös Hermeksestä voi laajentaa Apolloon, ja hyvitämme tällöin alkuperäisen investointisi.',
+      en: 'Yes. You can start with Apollo and add online booking or a language version later, for example – the work and price for a feature added later are confirmed in a quote. You can also move from Hermes to Apollo, and we credit your original investment towards it.',
+    },
+  },
+  needBooking: {
+    q: { fi: 'Tarvitsenko ajanvarausjärjestelmää?', en: 'Do I need a booking system?' },
+    a: {
+      fi: 'Jos asiakkaasi varaavat aikoja – esimerkiksi hoitoihin, valmennuksiin, konsultaatioihin tai vuokraukseen – ajanvaraus vähentää puheluita ja sähköposteja ja antaa asiakkaalle mahdollisuuden varata silloin, kun hänelle sopii. Jos asiakkaasi tavallisesti pyytävät ensin tarjouksen tai kysyvät lisätietoja, Apollon räätälöity yhteydenottolomake on usein parempi valinta. Arvioimme tarpeen mielellämme kanssasi.',
+      en: 'If your customers book appointments – treatments, coaching, consultations or rentals, for example – online booking cuts down on calls and emails and lets customers book whenever it suits them. If your customers usually ask for a quote or more information first, Apollo’s tailored contact form is often the better choice. We are happy to work out what you need with you.',
+    },
+  },
+  oldWebsite: {
+    q: { fi: 'Minulla on jo verkkosivut. Voitteko tehdä tilalle uudet?', en: 'I already have a website. Can you build a new one?' },
+    a: {
+      fi: 'Kyllä. Suunnittelemme vanhan sivuston tilalle kokonaan uuden Hermes-, Apollo- tai Zeus-verkkosivuston. Käymme nykyisen sivustosi läpi kartoitusvaiheessa, jotta uusi sivusto rakentuu sen varaan, mikä yrityksellesi on tärkeää.',
+      en: 'Yes. We design a completely new Hermes, Apollo or Zeus website to replace your old one. We go through your current site during discovery, so the new one builds on what matters to your business.',
+    },
+  },
+  ownContent: {
+    q: { fi: 'Voinko toimittaa omat kuvat ja tekstit?', en: 'Can I provide my own photos and text?' },
+    a: {
+      fi: 'Kyllä, ja se on usein paras vaihtoehto: aidot kuvat ja omat sanasi tekevät sivustosta uskottavan. Toimitat tarvittavat tekstit, kuvat ja materiaalit, ja me suunnittelemme, miten ne esitetään sivustolla selkeästi ja yhteydenottoon ohjaavasti.',
+      en: 'Yes, and it is often the best option: real photos and your own words make the site credible. You provide the text, photos and materials needed, and we design how they are presented on the site – clearly, and guiding visitors towards getting in touch.',
+    },
+  },
+  process: {
+    q: { fi: 'Miten verkkosivuprojekti etenee?', en: 'How does a website project work?' },
+    a: {
+      fi: 'Ensin kartoitamme liiketoimintasi, tavoitteesi ja asiakkaasi. Sen jälkeen teemme sivustosta demoversion, jota hiotaan palautteesi perusteella. Kun suunta on selvä, toteutamme sivuston, testaamme sen perusteellisesti ja julkaisemme sen. Lasku lähetetään, kun projekti on valmis, ja maksu tapahtuu pankkisiirrolla.',
+      en: 'First we get to know your business, goals and customers. Then we create a demo version of your site and refine it based on your feedback. Once the direction is clear, we build the site, test it thoroughly and launch it. The invoice is sent once the project is completed, and payment is by bank transfer.',
+    },
+  },
+  duration: {
     q: { fi: 'Kuinka kauan verkkosivujen tekeminen kestää?', en: 'How long does it take to build a website?' },
     a: {
-      fi: 'Aikataulu riippuu sivuston laajuudesta, valituista lisäosista ja siitä, kuinka nopeasti sisällöt ovat valmiina. Kerromme arvioidun aikataulun tarjouksen yhteydessä.',
+      fi: 'Aikataulu riippuu sivuston laajuudesta, valituista lisäominaisuuksista ja siitä, kuinka nopeasti sisällöt ovat valmiina. Kerromme arvioidun aikataulun tarjouksen yhteydessä.',
       en: 'It depends on the size of the site, the add-ons you choose and how soon the content is ready. We give you an estimated schedule with the quote.',
     },
   },
-  {
-    q: { fi: 'Sisältyykö julkaisun jälkeinen tuki pakettiin?', en: 'Is post-launch support included in the package?' },
+  calculator: {
+    q: { fi: 'Onko laskurin hinta lopullinen?', en: 'Is the calculator price final?' },
     a: {
-      fi: 'Julkaisun jälkeinen tekninen tuki ja ylläpito ovat saatavilla erillisinä maksullisina palveluina. Ylläpito ja hosting -paketti maksaa 40 €/kk tai 360 €/vuosi.',
-      en: 'Post-launch technical support and maintenance are available as separately paid services. The maintenance & hosting plan costs €40/month or €360/year.',
+      fi: 'Laskuri näyttää pakettien ja lisäominaisuuksien hinnat sellaisinaan. Ennen työn aloittamista vahvistamme tarjouksessa kokonaisuuden, aikataulun ja mahdolliset ulkoiset kulut, kuten maksupalvelun maksut. Jos tarvitset jotain pakettien ulkopuolelta, arvioimme sen erikseen. Laskuri ei tee tilausta – tarjouspyyntö on maksuton ja sitoumukseton.',
+      en: 'The calculator shows the package and add-on prices as they are. Before any work starts, we confirm the scope, schedule and any external costs, such as payment provider fees, in the quote. Anything beyond the packages is estimated separately. The calculator does not place an order – a quote request is free and non-binding.',
     },
   },
-  {
-    q: { fi: 'Voinko päivittää pakettiani myöhemmin?', en: 'Can I upgrade my package later?' },
+  maintenance: {
+    q: { fi: 'Sisältyykö verkkosivujen ylläpito hintaan?', en: 'Is website maintenance included in the price?' },
     a: {
-      fi: 'Ehdottomasti. Voit laajentaa sivustoasi milloin tahansa – esimerkiksi Hermeksestä Apolloksi tai lisäämällä Apolloon Zeus-lisäosia. Hyvitämme alkuperäisen investointisi ja käytämme sen päivitettyyn pakettiin.',
-      en: 'Absolutely. You can extend your site at any time – from Hermes to Apollo, for example, or by adding Zeus add-ons to Apollo. We credit your original investment towards the upgraded package.',
+      fi: `Ei. Pakettien hinnat ovat kertahintoja verkkosivuston suunnittelusta ja toteutuksesta. Julkaisun jälkeinen tekninen tuki, ylläpito ja hosting ovat erillisiä, valinnaisia palveluita: ylläpito ja hosting -paketti maksaa ${maintenanceMonth.fi}/kk tai ${maintenanceYear.fi}/vuosi, ja siihen sisältyvät päivitykset, tietoturva, varmuuskopiot ja tuki.`,
+      en: `No. The package prices are one-time prices for designing and building the website. Post-launch technical support, maintenance and hosting are separate, optional services: the maintenance & hosting plan costs ${maintenanceMonth.en}/month or ${maintenanceYear.en}/year and includes updates, security, backups and support.`,
     },
   },
-  {
-    q: { fi: 'Tarjoatteko hosting-palvelua?', en: 'Do you provide hosting?' },
-    a: {
-      fi: 'Kyllä. Tarjoamme täysin hallitun hostingin: sivustosi toimii turvallisessa ja optimoidussa palvelinympäristössä, johon sisältyvät säännöllinen ylläpito, varmuuskopiot ja tuki. Hosting laskutetaan erikseen osana ylläpitosopimusta.',
-      en: 'Yes. We offer fully managed hosting: your site runs in a secure, optimised server environment with regular maintenance, backups and support included. Hosting is billed separately as part of a maintenance plan.',
-    },
-  },
-  {
+  ownership: {
     q: { fi: 'Kuka omistaa verkkosivuston, kun se on valmis?', en: 'Who owns the website once it is finished?' },
     a: {
       fi: 'Asiakas omistaa valmiin verkkosivuston ja sen sisällön, kun maksu on suoritettu. Sivusto toimitetaan julkaisuvalmiina.',
       en: 'You own the finished website and its content once payment has been made. The site is delivered ready to publish.',
     },
   },
+} satisfies Record<string, Faq>
+
+/** The pricing page – every purchasing question. */
+export const pricingFaq: Faq[] = [
+  faq.whichPackage,
+  faq.onePageVsMulti,
+  faq.hermesQuality,
+  faq.apolloPrice,
+  faq.zeusPartial,
+  faq.addLater,
+  faq.needBooking,
+  faq.calculator,
+  faq.maintenance,
+  faq.ownContent,
+  faq.process,
+  faq.duration,
+  faq.ownership,
 ]
+
+/** The home page – the questions that most often stand between a visitor and an enquiry. */
+export const homeFaq: Faq[] = [
+  faq.whichPackage,
+  faq.hermesQuality,
+  faq.oldWebsite,
+  faq.zeusPartial,
+  faq.maintenance,
+  faq.process,
+]
+
+/** The websites service page. */
+export const websitesFaq: Faq[] = [faq.oldWebsite, faq.onePageVsMulti, faq.ownContent, faq.process, faq.duration]
 
 export const maintenanceFaq: Faq[] = [
   {

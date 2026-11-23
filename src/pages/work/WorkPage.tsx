@@ -21,8 +21,14 @@ const copy = {
   client: { fi: 'Asiakas', en: 'Client' },
   sector: { fi: 'Toimiala', en: 'Sector' },
   site: { fi: 'Sivusto', en: 'Website' },
+  delivered: { fi: 'Toteutus', en: 'Delivered' },
+  deliveredValue: { fi: 'Verkkosivuston suunnittelu ja toteutus', en: 'Website design and development' },
   contents: { fi: 'Sivuston sisältö', en: 'What the site includes' },
   ctaTitle: { fi: 'Seuraava referenssi voi olla sinun.', en: 'The next project could be yours.' },
+  ctaText: {
+    fi: 'Kerro lyhyesti yrityksestäsi ja tavoitteistasi. Suosittelemme sopivan paketin – Hermes, Apollo tai Zeus – ja teemme maksuttoman tarjouksen.',
+    en: 'Tell us briefly about your business and goals. We’ll recommend the right package – Hermes, Apollo or Zeus – and send you a free quote.',
+  },
 }
 
 export default function WorkPage({ id }: PageProps) {
@@ -88,6 +94,10 @@ export default function WorkPage({ id }: PageProps) {
                     <dt>{t(copy.site)}</dt>
                     <dd>{project.domain}</dd>
                   </div>
+                  <div>
+                    <dt>{t(copy.delivered)}</dt>
+                    <dd>{t(copy.deliveredValue)}</dd>
+                  </div>
                 </dl>
 
                 <div data-reveal="" style={stagger(3)}>
@@ -135,7 +145,7 @@ export default function WorkPage({ id }: PageProps) {
         )
       })}
 
-      <CtaBand title={t(copy.ctaTitle)} />
+      <CtaBand title={t(copy.ctaTitle)} text={t(copy.ctaText)} />
     </>
   )
 }

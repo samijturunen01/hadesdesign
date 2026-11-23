@@ -14,7 +14,7 @@ const included: Localized[] = [
     fi: 'Verkkosivuston suunnittelu ja toteutus valitun paketin laajuudessa',
     en: 'Designing and building the website to the scope of your package',
   },
-  { fi: 'Valitsemiesi Zeus-lisäosien käyttöönotto', en: 'Setting up the Zeus add-ons you choose' },
+  { fi: 'Valitsemiesi Zeus-lisäominaisuuksien käyttöönotto', en: 'Setting up the Zeus add-ons you choose' },
   {
     fi: 'Conversion First -suunnittelu, responsiivisuus ja hakukoneoptimointi paketin mukaisesti',
     en: 'Conversion First planning, responsive layouts and SEO as described for your package',

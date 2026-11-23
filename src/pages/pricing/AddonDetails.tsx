@@ -2,15 +2,12 @@ import { Icon } from '../../components/Icon'
 import { ADDON_ICONS } from '../../components/pricing/addonIcons'
 import { addons } from '../../data/pricing'
 import { formatEuro, useLocale, useT } from '../../i18n/locale'
-import { AppLink } from '../../lib/AppLink'
 import { stagger } from '../../lib/motion'
-import { pathFor } from '../../routes'
 
 const copy = {
   what: { fi: 'Mitä saat', en: 'What you get' },
   when: { fi: 'Hyödyllinen', en: 'Useful' },
   note: { fi: 'Hyvä tietää', en: 'Good to know' },
-  store: { fi: 'Tarvitsetko verkkokaupan?', en: 'Need an online store?' },
 }
 
 /** What each Zeus add-on means in practice – benefits first, limits stated plainly. */
@@ -42,17 +39,7 @@ export function AddonDetails() {
             </div>
             <div className="is-note">
               <dt>{t(copy.note)}</dt>
-              <dd>
-                {t(addon.note)}
-                {addon.id === 'payments' && (
-                  <>
-                    {' '}
-                    <AppLink to={pathFor('ecommerce', locale)} className="link">
-                      {t(copy.store)} <Icon name="arrow" />
-                    </AppLink>
-                  </>
-                )}
-              </dd>
+              <dd>{t(addon.note)}</dd>
             </div>
           </dl>
         </article>

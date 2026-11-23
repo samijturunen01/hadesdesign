@@ -1,29 +1,46 @@
 import { recommendedLabel, vatShort } from '../../data/packages'
-import { addons, getTier, headlinePrice, quoteForTier, quoteToSearch, ZEUS_FROM_PRICE, type TierId } from '../../data/pricing'
+import {
+  addons,
+  getTier,
+  headlinePrice,
+  quoteForTier,
+  quoteToSearch,
+  ZEUS_FROM_PRICE,
+  type TierId,
+  type TierSpec,
+} from '../../data/pricing'
 import { formatEuro, useLocale, useT } from '../../i18n/locale'
 import { stagger } from '../../lib/motion'
 import { pathFor } from '../../routes'
-import { Icon } from '../Icon'
+import { Icon, type IconName } from '../Icon'
 import { ButtonLink } from '../ui'
 import { ADDON_ICONS } from './addonIcons'
 import { TierEmblem } from './TierEmblem'
 
 const copy = {
   oneTime: { fi: 'Kertahinta', en: 'One-time price' },
-  allAddons: { fi: 'Kaikilla lisäosilla', en: 'With every add-on' },
-  orFrom: { fi: 'Tai vain tarvitsemasi lisäosat – alk.', en: 'Or only the add-ons you need – from' },
+  allAddons: { fi: 'Kaikilla lisäominaisuuksilla', en: 'With every add-on' },
+  orFrom: { fi: 'Tai vain tarvitsemasi lisäominaisuudet – alk.', en: 'Or only the add-ons you need – from' },
+  specs: { fi: 'Keskeiset ominaisuudet', en: 'Key features' },
+  addonsLabel: { fi: 'Valinnaiset lisäominaisuudet', en: 'Optional add-ons' },
   idealFor: { fi: 'Sopii', en: 'Best for' },
   quote: { fi: 'Pyydä tarjous', en: 'Request a quote' },
-  build: { fi: 'Kokoa oma Zeus', en: 'Build your Zeus' },
-  payForChoices: { fi: 'Maksat vain valitsemistasi lisäosista.', en: 'You only pay for the add-ons you choose.' },
+  build: { fi: 'Räätälöi Zeus', en: 'Configure Zeus' },
+  payForChoices: { fi: 'Maksat vain valitsemistasi lisäominaisuuksista.', en: 'You only pay for the add-ons you choose.' },
 }
+
+const SPEC_ICONS: Record<TierSpec['key'], IconName> = { form: 'mail', conversion: 'target', design: 'gem' }
+const KIND_ICONS: Record<TierId, IconName> = { hermes: 'page', apollo: 'pages', zeus: 'pages' }
 
 /** Calculator anchor on the pricing page. */
 export const CALCULATOR_ID = 'laskuri'
 
 /**
- * A Hermes / Apollo / Zeus package card. `inPage` = the calculator is on this
- * page, so Zeus links to it with a plain anchor instead of a route change.
+ * A Hermes / Apollo / Zeus package card. Hermes and Apollo show the same
+ * shared specs (Conversion First, premium design) next to the one that
+ * differs (the contact form); Zeus shows its add-ons in that place.
+ * `inPage` = the calculator is on this page, so Zeus links to it with a
+ * plain anchor instead of a route change.
  */
 export function TierCard({ id, index = 0, inPage = false }: { id: TierId; index?: number; inPage?: boolean }) {
   const t = useT()
@@ -55,12 +72,12 @@ export function TierCard({ id, index = 0, inPage = false }: { id: TierId; index?
           <h3 id={`tier-${id}`} className="tier__name">
             {tier.name}
           </h3>
-          <p className="tier__kind">{t(tier.kind)}</p>
+          <p className="tier__kind">
+            <Icon name={KIND_ICONS[id]} />
+            {t(tier.kind)}
+          </p>
         </div>
       </header>
-
-      <p className="tier__myth">{t(tier.myth)}</p>
-      <p className="tier__desc">{t(tier.description)}</p>
 
       <div className="tier__price">
         <p className="tier__amount">{formatEuro(headlinePrice(id), locale)}</p>
@@ -75,39 +92,51 @@ export function TierCard({ id, index = 0, inPage = false }: { id: TierId; index?
         )}
       </div>
 
+      {zeus ? (
+        <ul className="tier__addons" aria-label={t(copy.addonsLabel)}>
+          {addons.map((addon) => (
+            <li key={addon.id}>
+              <Icon name={ADDON_ICONS[addon.id]} />
+              <span>{t(addon.name)}</span>
+              <span className="tier__addon-price">
+                +{formatEuro(addon.price, locale)}
+                {addon.unit && <small> {t(addon.unit)}</small>}
+              </span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <ul className="tier__specs" aria-label={t(copy.specs)}>
+          {tier.specs.map((spec) => (
+            <li key={spec.key} className={spec.shared ? 'is-shared' : 'is-key'}>
+              <Icon name={SPEC_ICONS[spec.key]} />
+              <span>{t(spec.label)}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <div className="tier__about">
+        <p className="tier__desc">{t(tier.description)}</p>
+        <p className="tier__myth">{t(tier.myth)}</p>
+      </div>
+
       <p className="tier__ideal">
         <span>{t(copy.idealFor)}</span>
         {t(tier.idealFor)}
       </p>
 
       <div className="tier__includes">
-        {tier.includesLead && <p className="tier__lead">{t(tier.includesLead)}</p>}
-        {zeus ? (
-          <>
-            <ul className="tier__addons">
-              {addons.map((addon) => (
-                <li key={addon.id}>
-                  <Icon name={ADDON_ICONS[addon.id]} />
-                  <span>{t(addon.name)}</span>
-                  <span className="tier__addon-price">
-                    +{formatEuro(addon.price, locale)}
-                    {addon.unit && <small> {t(addon.unit)}</small>}
-                  </span>
-                </li>
-              ))}
-            </ul>
-            <p className="tier__fine">{t(copy.payForChoices)}</p>
-          </>
-        ) : (
-          <ul className="check-list">
-            {t(tier.features).map((feature) => (
-              <li key={feature}>
-                <Icon name="check" />
-                <span>{feature}</span>
-              </li>
-            ))}
-          </ul>
-        )}
+        <p className="tier__lead">{t(tier.includesLead)}</p>
+        <ul className="check-list">
+          {t(tier.features).map((feature) => (
+            <li key={feature}>
+              <Icon name="check" />
+              <span>{feature}</span>
+            </li>
+          ))}
+        </ul>
+        {zeus && <p className="tier__fine">{t(copy.payForChoices)}</p>}
       </div>
 
       <div className="tier__cta">

@@ -450,11 +450,242 @@
     grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
     gap: 2rem;
   }
+}
 
-  .contact-aside {
-    position: sticky;
-    top: calc(var(--header-h) + 2rem);
+.contact-aside {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.next-steps__title {
+  margin-bottom: 1rem;
+  font-size: var(--step-1);
+}
+
+.next-steps ol {
+  display: grid;
+  gap: 0.85rem;
+  list-style: none;
+}
+
+.next-steps li {
+  display: grid;
+  grid-template-columns: 1.9rem minmax(0, 1fr);
+  align-items: start;
+  gap: 0.75rem;
+  color: var(--ink-2);
+}
+
+.next-steps__no {
+  display: grid;
+  place-items: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  border: 1px solid rgba(255, 138, 76, 0.45);
+  border-radius: 50%;
+  font-size: var(--step--1);
+  font-weight: 700;
+  color: var(--ember-2);
+}
+
+.contact-quote {
+  margin: 0;
+}
+
+.contact-quote blockquote {
+  margin: 0;
+}
+
+.contact-quote blockquote p {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--step-1);
+  line-height: 1.4;
+  color: var(--ink);
+}
+
+.contact-quote figcaption {
+  margin-top: 0.9rem;
+  font-size: var(--step--1);
+  color: var(--ink-3);
+}
+
+.contact-quote figcaption strong {
+  color: var(--ink-2);
+}
+
+/* ---------- Package choice in the contact form ---------- */
+.choice-group {
+  display: grid;
+  gap: 0.75rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.choice-group legend {
+  margin-bottom: 0.75rem;
+  padding: 0;
+  font-size: var(--step--1);
+  font-weight: 600;
+  color: var(--ink-2);
+}
+
+.choice-group legend .optional {
+  font-weight: 400;
+  color: var(--ink-3);
+}
+
+.choices {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+@media (min-width: 40rem) {
+  .choices {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+}
+
+/* A radio/checkbox card: the input covers the card, so the whole card is the hit area. */
+.choice,
+.addon-choice {
+  position: relative;
+  border: 1px solid var(--glass-edge-strong);
+  border-radius: var(--r-s);
+  background: rgba(236, 232, 242, 0.03);
+  cursor: pointer;
+  transition:
+    border-color var(--dur-2),
+    background-color var(--dur-2),
+    box-shadow var(--dur-2);
+}
+
+.choice__input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.choice {
+  display: grid;
+  align-content: start;
+  gap: 0.2rem;
+  min-height: 4rem;
+  padding: 0.7rem 0.85rem;
+}
+
+.choice__name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.45rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--ink);
+}
+
+.choice__emblem {
+  flex: none;
+  width: 1.2rem;
+  height: 1.2rem;
+  color: var(--tier);
+}
+
+.choice__badge {
+  padding: 0.05rem 0.45rem;
+  border-radius: var(--r-pill);
+  background: var(--grad-ember);
+  color: var(--ember-ink);
+  font-size: 0.65rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.choice__hint {
+  font-size: var(--step--2);
+  line-height: 1.35;
+  color: var(--ink-3);
+}
+
+.choice:hover,
+.addon-choice:hover {
+  border-color: rgba(255, 179, 107, 0.45);
+}
+
+.choice:has(.choice__input:checked),
+.addon-choice:has(.choice__input:checked) {
+  border-color: var(--tier, var(--ember));
+  background: var(--tier-soft, rgba(255, 122, 61, 0.1));
+  box-shadow: inset 0 0 0 1px var(--tier-line, rgba(255, 138, 76, 0.4));
+}
+
+.choice:has(.choice__input:checked) .choice__hint {
+  color: var(--ink-2);
+}
+
+.choice:has(.choice__input:focus-visible),
+.addon-choice:has(.choice__input:focus-visible) {
+  outline: 2px solid var(--ember-2);
+  outline-offset: 2px;
+}
+
+.addon-choices {
+  display: grid;
+  gap: 0.55rem;
+}
+
+@media (min-width: 40rem) {
+  .addon-choices {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.addon-choice {
+  display: grid;
+  grid-template-columns: 1.2rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 3.25rem;
+  padding: 0.6rem 0.9rem;
+}
+
+.addon-choice > svg {
+  width: 1.2rem;
+  height: 1.2rem;
+  color: var(--tier);
+}
+
+.addon-choice__name {
+  font-weight: 650;
+  color: var(--ink);
+}
+
+.addon-choice__price {
+  font-size: var(--step--1);
+  font-weight: 700;
+  white-space: nowrap;
+  color: var(--ink-2);
+}
+
+.addon-choice__price small {
+  font-weight: 500;
+  color: var(--ink-3);
+}
+
+.addon-choice:has(.choice__input:checked) .addon-choice__price {
+  color: var(--ink);
+}
+
+.form-stepper {
+  margin-top: 0.25rem;
 }
 
 .contact-form {

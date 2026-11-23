@@ -1,7 +1,16 @@
 import { Icon } from '../../components/Icon'
 import { TierEmblem } from '../../components/pricing/TierEmblem'
 import { recommendedLabel } from '../../data/packages'
-import { comparison, getAddon, getTier, headlinePrice, TIER_IDS, type CompareCell, type TierId } from '../../data/pricing'
+import {
+  comparison,
+  getAddon,
+  getTier,
+  headlinePrice,
+  TIER_IDS,
+  type CompareCell,
+  type CompareRow,
+  type TierId,
+} from '../../data/pricing'
 import { formatEuro, useLocale, useT } from '../../i18n/locale'
 
 const copy = {
@@ -9,17 +18,25 @@ const copy = {
   feature: { fi: 'Ominaisuus', en: 'Feature' },
   included: { fi: 'Sisältyy', en: 'Included' },
   notIncluded: { fi: 'Ei sisälly', en: 'Not included' },
-  optional: { fi: 'valinnainen lisäosa', en: 'optional add-on' },
-  allAddons: { fi: 'kaikilla lisäosilla', en: 'with every add-on' },
+  yes: { fi: 'Kyllä', en: 'Yes' },
+  no: { fi: 'Ei', en: 'No' },
+  optional: { fi: 'valinnainen', en: 'optional' },
+  allAddons: { fi: 'kaikilla lisäominaisuuksilla', en: 'with every add-on' },
+  keys: { fi: 'Merkkien selitykset', en: 'Key' },
+  keyIncluded: { fi: 'Sisältyy hintaan', en: 'Included in the price' },
+  keyAsNeeded: { fi: 'Toteutetaan, kun se sopii yrityksellesi', en: 'Built when it suits your business' },
+  keyAsNeededLabel: { fi: 'Tarpeen mukaan', en: 'Where relevant' },
+  keyOptional: { fi: 'Valinnainen lisäominaisuus, vain Zeus', en: 'Optional add-on, Zeus only' },
+  keyNot: { fi: 'Ei sisälly', en: 'Not included' },
 }
 
-function Cell({ cell }: { cell: CompareCell }) {
+function Cell({ cell, row }: { cell: CompareCell; row: CompareRow }) {
   const t = useT()
   const locale = useLocale()
-  if (cell === true) return <Icon name="check" className="yes" label={t(copy.included)} />
+  if (cell === true) return <Icon name="check" className="yes" label={t(row.yesNo ? copy.yes : copy.included)} />
   if (cell === false) {
     return (
-      <span className="no" role="img" aria-label={t(copy.notIncluded)}>
+      <span className="no" role="img" aria-label={t(row.yesNo ? copy.no : copy.notIncluded)}>
         –
       </span>
     )
@@ -28,8 +45,9 @@ function Cell({ cell }: { cell: CompareCell }) {
     const addon = getAddon(cell.addon)
     return (
       <span className="cmp-addon">
-        <span className="visually-hidden">{t(copy.optional)}: </span>+{formatEuro(addon.price, locale)}
+        +{formatEuro(addon.price, locale)}
         {addon.unit && <small> {t(addon.unit)}</small>}
+        <span className="cmp-addon__tag">{t(copy.optional)}</span>
       </span>
     )
   }
@@ -47,12 +65,42 @@ function PriceLine({ id }: { id: TierId }) {
   )
 }
 
+/** What the markers mean – shown above the table and the stacked cards alike. */
+function Keys() {
+  const t = useT()
+  const locale = useLocale()
+  return (
+    <ul className="cmp-keys" aria-label={t(copy.keys)}>
+      <li>
+        <Icon name="check" className="yes" />
+        {t(copy.keyIncluded)}
+      </li>
+      <li>
+        <span className="cmp-text">{t(copy.keyAsNeededLabel)}</span>
+        {t(copy.keyAsNeeded)}
+      </li>
+      <li>
+        <span className="cmp-addon">{locale === 'fi' ? '+ €' : '+€'}</span>
+        {t(copy.keyOptional)}
+      </li>
+      <li>
+        <span className="no" aria-hidden="true">
+          –
+        </span>
+        {t(copy.keyNot)}
+      </li>
+    </ul>
+  )
+}
+
 /** Desktop: one semantic table. Phones: the same rows stacked, with a sticky package legend. */
 export function TierComparison() {
   const t = useT()
 
   return (
     <>
+      <Keys />
+
       <div className="cmp-table glass" data-reveal="">
         <table>
           <caption className="visually-hidden">{t(copy.caption)}</caption>
@@ -70,6 +118,7 @@ export function TierComparison() {
                       <TierEmblem tier={id} className="cmp-emblem" />
                       {tier.name}
                     </span>
+                    <span className="cmp-kind">{t(tier.kind)}</span>
                     <PriceLine id={id} />
                   </th>
                 )
@@ -79,7 +128,10 @@ export function TierComparison() {
           {comparison.map((group) => (
             <tbody key={group.title.fi}>
               <tr className="cmp-group">
-                <th scope="rowgroup">{t(group.title)}</th>
+                <th scope="rowgroup">
+                  {t(group.title)}
+                  {group.lead && <span className="cmp-group__lead">{t(group.lead)}</span>}
+                </th>
                 {TIER_IDS.map((id) => (
                   <td key={id} className={getTier(id).recommended ? 'is-hot' : undefined} />
                 ))}
@@ -92,7 +144,7 @@ export function TierComparison() {
                   </th>
                   {TIER_IDS.map((id) => (
                     <td key={id} className={getTier(id).recommended ? 'is-hot' : undefined}>
-                      <Cell cell={row.cells[id]} />
+                      <Cell cell={row.cells[id]} row={row} />
                     </td>
                   ))}
                 </tr>
@@ -115,6 +167,7 @@ export function TierComparison() {
         {comparison.map((group, g) => (
           <section key={group.title.fi} className="cmp-card glass" aria-labelledby={`cmp-group-${g}`}>
             <h3 id={`cmp-group-${g}`}>{t(group.title)}</h3>
+            {group.lead && <p className="cmp-card__lead">{t(group.lead)}</p>}
             <ul>
               {group.rows.map((row) => (
                 <li key={row.label.fi}>
@@ -125,7 +178,7 @@ export function TierComparison() {
                       <div key={id} className={getTier(id).recommended ? 'is-hot' : undefined}>
                         <dt className="visually-hidden">{getTier(id).name}</dt>
                         <dd>
-                          <Cell cell={row.cells[id]} />
+                          <Cell cell={row.cells[id]} row={row} />
                         </dd>
                       </div>
                     ))}

@@ -2,6 +2,7 @@
  * Contact form fields and validation. The limits mirror apps-script/Site.js –
  * the backend validates again, so keep both in sync.
  */
+import { maintenancePlan } from '../../data/packages'
 import { PRICES, ZEUS_FROM_PRICE, type TierId } from '../../data/pricing'
 import { formatEuro, type Locale, type Localized } from '../../i18n/locale'
 
@@ -13,26 +14,33 @@ export const LIMITS = {
   message: { min: 10, max: 2000 },
 } as const
 
-/** What the visitor can choose in the form. */
-export const SERVICE_OPTIONS = ['hermes', 'apollo', 'zeus', 'store', 'redesign', 'maintenance', 'other'] as const
+/**
+ * What the visitor can choose in the form: a package, "not sure yet" (asks
+ * for a recommendation), maintenance, or something else. Online stores and
+ * website redesign are no longer offered (owner, 2026-11-23).
+ */
+export const SERVICE_OPTIONS = ['hermes', 'apollo', 'zeus', 'unsure', 'maintenance', 'other'] as const
 export type ServiceOption = (typeof SERVICE_OPTIONS)[number]
 
-/** The `service` values the backend accepts (apps-script/Site.js → fields → service → options). */
+/**
+ * The `service` values the deployed backend accepts (apps-script/Site.js →
+ * fields → service → options). 'store' and 'redesign' are still valid there
+ * but the form no longer sends them.
+ */
 export type BackendService = 'light' | 'website' | 'store' | 'redesign' | 'maintenance' | 'other'
 
 /**
  * The deployed backend predates Hermes, Apollo and Zeus and validates `service`
- * against its original keys, so the new packages are sent under those keys
- * (Hermes = the one-page tier, Apollo and Zeus = the multi-page tier). The
- * exact package and add-ons travel in the message (see quoteSummary), so an
- * old backend still delivers every request correctly.
+ * against its original keys, so the choices are sent under those keys
+ * (Hermes = the one-page tier, Apollo and Zeus = the multi-page tier, "not
+ * sure" = "Muu / en ole vielä varma"). The exact package and add-ons travel in
+ * the message (see quoteSummary), so the backend needs no redeployment.
  */
 export const BACKEND_SERVICE: Record<ServiceOption, BackendService> = {
   hermes: 'light',
   apollo: 'website',
   zeus: 'website',
-  store: 'store',
-  redesign: 'redesign',
+  unsure: 'other',
   maintenance: 'maintenance',
   other: 'other',
 }
@@ -42,25 +50,45 @@ export const TIER_OPTIONS = ['hermes', 'apollo', 'zeus'] as const satisfies read
 export const isTierOption = (value: ServiceOption | ''): value is TierId =>
   (TIER_OPTIONS as readonly string[]).includes(value)
 
-const eur = (amount: number) => ({ fi: formatEuro(amount, 'fi'), en: formatEuro(amount, 'en') })
+/** Contact page link that preselects "not sure yet" (e.g. from the pricing page). */
+export const UNSURE_SEARCH = '?package=unsure'
 
-export const serviceLabels: Record<ServiceOption, Localized> = {
+/** "not sure yet" from ?package=unsure; packages themselves are read with quoteFromSearch. */
+export function serviceFromSearch(search: string): ServiceOption | null {
+  return new URLSearchParams(search).get('package') === 'unsure' ? 'unsure' : null
+}
+
+const eur = (amount: number): Localized => ({ fi: formatEuro(amount, 'fi'), en: formatEuro(amount, 'en') })
+
+/** Name and a one-line hint for each choice. */
+export const serviceOptions: Record<ServiceOption, { label: Localized; hint: Localized }> = {
   hermes: {
-    fi: `Hermes – yhden sivun verkkosivusto (${eur(PRICES.hermes).fi})`,
-    en: `Hermes – one-page website (${eur(PRICES.hermes).en})`,
+    label: { fi: 'Hermes', en: 'Hermes' },
+    hint: { fi: `Yksisivuinen · ${eur(PRICES.hermes).fi}`, en: `One page · ${eur(PRICES.hermes).en}` },
   },
   apollo: {
-    fi: `Apollo – monisivuinen verkkosivusto (${eur(PRICES.apollo).fi})`,
-    en: `Apollo – multi-page website (${eur(PRICES.apollo).en})`,
+    label: { fi: 'Apollo', en: 'Apollo' },
+    hint: { fi: `Monisivuinen · ${eur(PRICES.apollo).fi}`, en: `Multi-page · ${eur(PRICES.apollo).en}` },
   },
   zeus: {
-    fi: `Zeus – Apollo + lisäosat (alk. ${eur(ZEUS_FROM_PRICE).fi})`,
-    en: `Zeus – Apollo + add-ons (from ${eur(ZEUS_FROM_PRICE).en})`,
+    label: { fi: 'Zeus', en: 'Zeus' },
+    hint: {
+      fi: `Apollo + lisäominaisuudet · alk. ${eur(ZEUS_FROM_PRICE).fi}`,
+      en: `Apollo + add-ons · from ${eur(ZEUS_FROM_PRICE).en}`,
+    },
   },
-  store: { fi: 'Verkkokauppa', en: 'Online store' },
-  redesign: { fi: 'Verkkosivujen uudistus', en: 'Website redesign' },
-  maintenance: { fi: 'Ylläpito & hosting', en: 'Maintenance & hosting' },
-  other: { fi: 'Muu / en ole vielä varma', en: 'Something else / not sure yet' },
+  unsure: {
+    label: { fi: 'En osaa vielä sanoa', en: 'Not sure yet' },
+    hint: { fi: 'Autamme valitsemaan', en: 'We’ll help you choose' },
+  },
+  maintenance: {
+    label: { fi: 'Ylläpito ja hosting', en: 'Maintenance & hosting' },
+    hint: { fi: `${eur(maintenancePlan.monthly).fi}/kk`, en: `${eur(maintenancePlan.monthly).en}/month` },
+  },
+  other: {
+    label: { fi: 'Muu asia', en: 'Something else' },
+    hint: { fi: 'Kysymys tai muu aihe', en: 'A question or another topic' },
+  },
 }
 
 export interface ContactValues {

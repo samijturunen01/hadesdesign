@@ -6,8 +6,6 @@ export const pageNames: Record<PageId, Localized> = {
   home: { fi: 'Etusivu', en: 'Home' },
   services: { fi: 'Palvelut', en: 'Services' },
   websites: { fi: 'Verkkosivut', en: 'Websites' },
-  ecommerce: { fi: 'Verkkokaupat', en: 'Online stores' },
-  redesign: { fi: 'Verkkosivujen uudistus', en: 'Website redesign' },
   maintenance: { fi: 'Ylläpito ja hosting', en: 'Maintenance & hosting' },
   work: { fi: 'Referenssit', en: 'Work' },
   pricing: { fi: 'Hinnasto', en: 'Pricing' },
@@ -22,11 +20,15 @@ export interface NavItem {
   children?: ServicePageId[]
 }
 
-/** Primary navigation (the contact page is the separate call to action). */
+/**
+ * Primary navigation (the contact page is the separate call to action).
+ * Pricing sits right after the services: comparing the packages is the
+ * step most visitors take before getting in touch.
+ */
 export const primaryNav: NavItem[] = [
-  { id: 'services', children: ['websites', 'ecommerce', 'redesign', 'maintenance'] },
-  { id: 'work' },
+  { id: 'services', children: ['websites', 'maintenance'] },
   { id: 'pricing' },
+  { id: 'work' },
   { id: 'about' },
 ]
 
@@ -35,8 +37,6 @@ export const ctaLabel: Localized = { fi: 'Pyydä tarjous', en: 'Request a quote'
 /** Parent page for breadcrumbs. */
 export const parentOf: Partial<Record<PageId, PageId>> = {
   websites: 'services',
-  ecommerce: 'services',
-  redesign: 'services',
   maintenance: 'services',
 }
 

@@ -31,24 +31,24 @@ import { useTweenedNumber } from '../../lib/useTweenedNumber'
 import { pathFor } from '../../routes'
 
 const copy = {
-  legend: { fi: 'Valitse lisäosat', en: 'Choose your add-ons' },
+  legend: { fi: 'Valitse lisäominaisuudet', en: 'Choose your add-ons' },
   baseNote: { fi: 'Monisivuinen verkkosivusto – pohja, joka sisältyy aina', en: 'Multi-page website – the base, always included' },
   included: { fi: 'Sisältyy', en: 'Included' },
   fewer: { fi: 'Yksi lisäkieli vähemmän', en: 'One language fewer' },
   more: { fi: 'Yksi lisäkieli lisää', en: 'One more language' },
   finnishOnly: { fi: 'Sivusto on suomeksi.', en: 'The site is in Finnish.' },
   maxNote: { fi: 'Tarvitsetko useampia? Kerro siitä tarjouspyynnössä.', en: 'Need more? Mention it in your quote request.' },
-  selectAll: { fi: 'Valitse kaikki lisäosat', en: 'Select every add-on' },
+  selectAll: { fi: 'Valitse kaikki lisäominaisuudet', en: 'Select every add-on' },
   clear: { fi: 'Tyhjennä valinnat', en: 'Clear selection' },
   yourChoice: { fi: 'Valintasi', en: 'Your selection' },
   apolloOnly: {
-    fi: 'Ei lisäosia – tämä on Apollo-paketti sellaisenaan.',
-    en: 'No add-ons – this is simply the Apollo package.',
+    fi: 'Ei lisäominaisuuksia – tämä on Apollo sellaisenaan,',
+    en: 'No add-ons – this is simply Apollo,',
   },
   total: { fi: 'Yhteensä', en: 'Total' },
   oneTime: { fi: 'Kertahinta', en: 'One-time price' },
   cta: { fi: 'Pyydä tarjous', en: 'Request a quote' },
-  ctaMore: { fi: ' valitsemastasi kokonaisuudesta', en: ' for this selection' },
+  ctaMore: { fi: ' tästä kokonaisuudesta', en: ' for this selection' },
   fine: {
     fi: 'Laskuri näyttää hinnan – se ei tee tilausta. Tarjouspyyntö on maksuton eikä sido sinua mihinkään. Ulkoisten palveluiden, kuten maksupalvelun, kulut eivät sisälly hintaan.',
     en: 'The calculator shows the price – it does not place an order. A quote request is free and does not commit you to anything. Costs of external services, such as a payment provider, are not included.',
@@ -226,7 +226,9 @@ function Calculator({ initial }: { initial: ZeusSelection }) {
             </span>
             <div>
               <p className="calc__tier-name">{tier === 'zeus' ? 'Zeus' : 'Apollo'}</p>
-              <p className="calc__tier-sub">{zeusSubtitle(selection, locale) ?? t(copy.apolloOnly)}</p>
+              <p className="calc__tier-sub">
+                {zeusSubtitle(selection, locale) ?? `${t(copy.apolloOnly)} ${formatEuro(PRICES.apollo, locale)}.`}
+              </p>
             </div>
           </div>
           <ul className="calc__lines">

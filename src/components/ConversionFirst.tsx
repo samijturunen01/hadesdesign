@@ -1,7 +1,7 @@
 import type { CSSProperties } from 'react'
-import { Icon } from '../../components/Icon'
-import type { Localized } from '../../i18n/locale'
-import { useT } from '../../i18n/locale'
+import { Icon } from './Icon'
+import type { Localized } from '../i18n/locale'
+import { useT } from '../i18n/locale'
 
 /** What every Hades Design site is designed to do – the visitor's path from first look to enquiry. */
 const steps: Array<{ title: Localized; text: Localized }> = [

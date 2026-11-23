@@ -17,8 +17,6 @@ const loaders: Record<PageKey, () => Promise<PageModule>> = {
   home: () => import('./home/HomePage'),
   services: () => import('./services/ServicesPage'),
   websites: () => import('./service/ServicePage'),
-  ecommerce: () => import('./service/ServicePage'),
-  redesign: () => import('./service/ServicePage'),
   maintenance: () => import('./service/ServicePage'),
   work: () => import('./work/WorkPage'),
   pricing: () => import('./pricing/PricingPage'),

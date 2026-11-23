@@ -12,16 +12,16 @@ import type { PageProps } from '../registry'
 
 const copy = {
   eyebrow: { fi: 'Palvelut', en: 'Services' },
-  title: { fi: 'Verkkosivut, verkkokaupat', en: 'Websites, online stores' },
-  accent: { fi: 'ja ylläpito.', en: 'and maintenance.' },
+  title: { fi: 'Verkkosivut, jotka auttavat myymään –', en: 'Websites that help you sell –' },
+  accent: { fi: 'ja ylläpito niiden tueksi.', en: 'and the maintenance behind them.' },
   lead: {
-    fi: 'Suunnittelemme ja rakennamme yrityksille verkkosivut ja verkkokaupat, uudistamme vanhat sivustot sekä hoidamme ylläpidon ja hostingin – kaikki samasta paikasta.',
-    en: 'We design and build websites and online stores for businesses, redesign outdated sites and take care of maintenance and hosting – all in one place.',
+    fi: 'Suunnittelemme ja toteutamme yrityksille näyttäviä, myyntiin keskittyviä verkkosivuja – Hermes, Apollo tai Zeus – ja huolehdimme halutessasi niiden ylläpidosta ja hostingista.',
+    en: 'We design and build striking websites for businesses that are focused on winning customers – Hermes, Apollo or Zeus – and take care of their maintenance and hosting if you wish.',
   },
-  includes: { fi: 'Sisältää muun muassa', en: 'Includes, among other things' },
+  includes: { fi: 'Mitä saat', en: 'What you get' },
   processEyebrow: { fi: 'Prosessi', en: 'Process' },
   processTitle: { fi: 'Kartoituksesta', en: 'From discovery' },
-  processAccent: { fi: 'jatkuvaan tukeen.', en: 'to ongoing support.' },
+  processAccent: { fi: 'julkaisuun ja sen jälkeen.', en: 'to launch and beyond.' },
 }
 
 export default function ServicesPage({ id }: PageProps) {

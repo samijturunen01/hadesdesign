@@ -149,8 +149,6 @@ export function offerNodes(locale: Locale) {
 
 const SERVICE_OFFERS: Record<ServicePageId, (locale: Locale) => object[]> = {
   websites: (l) => tierOffers(l),
-  ecommerce: () => [],
-  redesign: () => [],
   maintenance: (l) => [maintenanceOffer(l)],
 }
 

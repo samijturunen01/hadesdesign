@@ -71,17 +71,22 @@ for (const page of manifest.pages) {
 writePage('/404', ['404.html'], await render('/404'))
 console.log('prerendered 404.html')
 
-// 3. Redirects from the previous site's URLs ---------------------------------------
+// 3. Redirects: the previous site's URLs and removed pages ------------------------
 const escapeHtml = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+const MOVED = {
+  fi: { title: 'Sivu on siirtynyt', text: 'Sivu on siirtynyt osoitteeseen' },
+  en: { title: 'This page has moved', text: 'This page has moved to' },
+}
 for (const legacy of manifest.legacy) {
   const target = `${base}${legacy.fi.replace(/^\//, '')}`
   const targetEn = `${base}${legacy.en.replace(/^\//, '')}`
+  const moved = MOVED[legacy.lang] ?? MOVED.fi
   const html = `<!doctype html>
-<html lang="fi">
+<html lang="${legacy.lang}">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Sivu on siirtynyt – Hades Design</title>
+    <title>${moved.title} – Hades Design</title>
     <meta name="robots" content="noindex, follow" />
     <link rel="canonical" href="${escapeHtml(abs(legacy.fi))}" />
     <meta http-equiv="refresh" content="0; url=${escapeHtml(target)}" />
@@ -89,7 +94,7 @@ for (const legacy of manifest.legacy) {
     <style>html{background:#09080d;color:#ece8f2;font:16px/1.5 system-ui,sans-serif}body{display:grid;place-items:center;min-height:100vh;margin:0}a{color:inherit}</style>
   </head>
   <body>
-    <p>Sivu on siirtynyt osoitteeseen <a href="${escapeHtml(target)}">${escapeHtml(abs(legacy.fi))}</a>.</p>
+    <p>${moved.text} <a href="${escapeHtml(target)}">${escapeHtml(abs(legacy.fi))}</a>.</p>
   </body>
 </html>
 `

@@ -9,8 +9,6 @@ export const PAGE_IDS = [
   'home',
   'services',
   'websites',
-  'ecommerce',
-  'redesign',
   'maintenance',
   'work',
   'pricing',
@@ -23,15 +21,13 @@ export const PAGE_IDS = [
 export type PageId = (typeof PAGE_IDS)[number]
 
 /** Service detail pages share one template (src/pages/service). */
-export const SERVICE_PAGE_IDS = ['websites', 'ecommerce', 'redesign', 'maintenance'] as const
+export const SERVICE_PAGE_IDS = ['websites', 'maintenance'] as const
 export type ServicePageId = (typeof SERVICE_PAGE_IDS)[number]
 
 export const PATHS: Record<PageId, Localized> = {
   home: { fi: '/', en: '/en' },
   services: { fi: '/palvelut', en: '/en/services' },
   websites: { fi: '/palvelut/verkkosivut', en: '/en/services/websites' },
-  ecommerce: { fi: '/palvelut/verkkokaupat', en: '/en/services/online-stores' },
-  redesign: { fi: '/palvelut/verkkosivujen-uudistus', en: '/en/services/website-redesign' },
   maintenance: { fi: '/palvelut/yllapito-ja-hosting', en: '/en/services/maintenance-and-hosting' },
   work: { fi: '/referenssit', en: '/en/work' },
   pricing: { fi: '/hinnasto', en: '/en/pricing' },
@@ -44,11 +40,9 @@ export const PATHS: Record<PageId, Localized> = {
 /** Sitemap priority hints (0.0–1.0). */
 export const PRIORITY: Record<PageId, number> = {
   home: 1,
-  services: 0.9,
+  services: 0.8,
   websites: 0.9,
-  ecommerce: 0.8,
-  redesign: 0.8,
-  maintenance: 0.8,
+  maintenance: 0.7,
   work: 0.8,
   pricing: 0.9,
   about: 0.7,
@@ -84,12 +78,23 @@ export function translatePath(pathname: string, target: Locale): string {
 }
 
 /**
- * URLs of the previous site (a client-side app whose routes were matched
- * case-insensitively; links used lowercase, route definitions PascalCase).
- * The prerender script writes a static redirect page for every variant, and
- * the not-found page redirects any other casing on the client.
+ * URLs that no longer have a page of their own. Each gets a small static
+ * redirect page (meta refresh + canonical, written by the prerender script),
+ * and the not-found page redirects any other letter case on the client.
+ *
+ * `locale` – the old URL belonged to one language, so it redirects to that
+ * language's version of the target page. Without it (the previous site's
+ * URLs) the Finnish page is the target and ?lang=en picks the English one.
  */
-export const LEGACY_REDIRECTS: Array<{ from: string[]; to: PageId }> = [
+export interface Redirect {
+  from: string[]
+  to: PageId
+  locale?: Locale
+}
+
+export const LEGACY_REDIRECTS: Redirect[] = [
+  // The previous site (a client-side app whose routes were matched case-insensitively;
+  // links used lowercase, route definitions PascalCase).
   { from: ['/home', '/Home'], to: 'home' },
   { from: ['/services', '/Services'], to: 'services' },
   { from: ['/portfolio', '/Portfolio'], to: 'work' },
@@ -99,9 +104,14 @@ export const LEGACY_REDIRECTS: Array<{ from: string[]; to: PageId }> = [
   { from: ['/contact', '/Contact'], to: 'contact' },
   { from: ['/privacypolicy', '/PrivacyPolicy'], to: 'privacy' },
   { from: ['/terms', '/Terms'], to: 'terms' },
+  // Online stores and website redesign are no longer separate services (owner, 2026-11-23).
+  // A new website for a business that already has one is built as Hermes, Apollo or
+  // Zeus, so both old service pages point to the website service.
+  { from: ['/palvelut/verkkokaupat', '/palvelut/verkkosivujen-uudistus'], to: 'websites', locale: 'fi' },
+  { from: ['/en/services/online-stores', '/en/services/website-redesign'], to: 'websites', locale: 'en' },
 ]
 
-/** Resolve an old-site URL (any casing) to its new page, or null. */
+/** Resolve a redirected URL (any casing) to its new page, or null. */
 export function matchLegacy(pathname: string): PageId | null {
   const path = normalizePath(pathname).toLowerCase()
   return LEGACY_REDIRECTS.find((r) => r.from.some((f) => f.toLowerCase() === path))?.to ?? null

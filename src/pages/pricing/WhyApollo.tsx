@@ -26,10 +26,10 @@ const reasons: Array<{ icon: IconName; title: Localized; text: Localized }> = [
   },
   {
     icon: 'spark',
-    title: { fi: 'Oma ilme ja koko asiakaspolku', en: 'Your own look and the whole journey' },
+    title: { fi: 'Tilaa kertoa enemmän', en: 'Room to say more' },
     text: {
-      fi: 'Yrityskohtainen luova konsepti ja kattava Conversion First -strategia ohjaavat kävijää koko sivuston läpi.',
-      en: 'A creative direction made for you and a complete Conversion First strategy guide visitors through the whole site.',
+      fi: 'Yrityssivu, referenssit ja laajempi sisältö vastaavat asiakkaan kysymyksiin ja rakentavat luottamusta jo ennen yhteydenottoa.',
+      en: 'A company page, references and fuller content answer your customers’ questions and build trust before they get in touch.',
     },
   },
 ]
