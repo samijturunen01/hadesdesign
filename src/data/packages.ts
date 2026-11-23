@@ -1,19 +1,20 @@
 /**
  * The maintenance & hosting plan (verified prices) and shared price wording.
  * The website packages Hermes, Apollo and Zeus live in ./pricing.ts.
- * Package prices include VAT, as stated on the previous site. The VAT status of
- * the maintenance prices was never stated – do not add one.
+ * Package prices are shown VAT excluded (+ ALV) – owner's decision 2026-11-23,
+ * replacing the earlier VAT-included policy. The VAT status of the maintenance
+ * prices was never stated – do not add one.
  */
 import type { Localized } from '../i18n/locale'
 
 /** VAT wording for every package price on the site – the one place to change if the policy changes. */
 export const vatNote: Localized = {
-  fi: 'Hinnat sisältävät ALV:n.',
-  en: 'Prices include VAT.',
+  fi: 'Hintoihin lisätään ALV.',
+  en: 'Prices exclude VAT.',
 }
 
 /** Short form next to a price. */
-export const vatShort: Localized = { fi: 'sis. ALV', en: 'VAT incl.' }
+export const vatShort: Localized = { fi: '+ ALV', en: '+ VAT' }
 
 /** Apollo's badge (owner's choice, 2026-11-23). */
 export const recommendedLabel: Localized = { fi: 'Suosituin', en: 'Most popular' }

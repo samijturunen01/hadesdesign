@@ -45,12 +45,12 @@ export const pageMeta: Record<PageId | 'notFound', Localized<PageMeta>> = {
     fi: {
       title: 'Verkkosivujen suunnittelu yritykselle',
       description:
-        `Yksilöllisesti suunnitellut, nopeat ja myyntiin keskittyvät kotisivut yrityksellesi. Hermes ${hermes.fi}, Apollo ${apollo.fi} ja Zeus lisäominaisuuksilla (sis. ALV).`,
+        `Yksilöllisesti suunnitellut, nopeat ja myyntiin keskittyvät kotisivut yrityksellesi. Hermes ${hermes.fi}, Apollo ${apollo.fi} ja Zeus lisäominaisuuksilla (+ ALV).`,
     },
     en: {
       title: 'Website design for businesses',
       description:
-        `Individually designed, fast websites for your business, focused on winning customers. Hermes ${hermes.en}, Apollo ${apollo.en} and Zeus with add-ons (VAT incl.).`,
+        `Individually designed, fast websites for your business, focused on winning customers. Hermes ${hermes.en}, Apollo ${apollo.en} and Zeus with add-ons (+ VAT).`,
     },
   },
   maintenance: {
@@ -81,12 +81,12 @@ export const pageMeta: Record<PageId | 'notFound', Localized<PageMeta>> = {
     fi: {
       title: `Hinnasto – verkkosivut yritykselle alk. ${from.fi}`,
       description:
-        `Hermes ${hermes.fi} (yksisivuinen), Apollo ${apollo.fi} (monisivuinen) ja Zeus ${zeus.fi} kaikilla lisäominaisuuksilla. Vertaa paketteja ja laske hinta. Hinnat sis. ALV.`,
+        `Hermes ${hermes.fi} (yksisivuinen), Apollo ${apollo.fi} (monisivuinen) ja Zeus ${zeus.fi} kaikilla lisäominaisuuksilla. Vertaa paketteja ja laske hinta. Hinnat + ALV.`,
     },
     en: {
       title: `Pricing – business websites from ${from.en}`,
       description:
-        `Hermes ${hermes.en} (one page), Apollo ${apollo.en} (multi-page) and Zeus ${zeus.en} with every add-on. Compare the packages and work out your price. VAT incl.`,
+        `Hermes ${hermes.en} (one page), Apollo ${apollo.en} (multi-page) and Zeus ${zeus.en} with every add-on. Compare the packages and work out your price. Prices exclude VAT.`,
     },
   },
   about: {

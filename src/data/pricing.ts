@@ -4,8 +4,8 @@
  * The single source of truth for package prices: the pricing page and its Zeus
  * calculator, the home page, the websites service page, the contact form, page
  * meta and structured data all read from here. Prices set by the owner on
- * 2026-11-23. Like the packages before them they are shown VAT included (the
- * site's existing pricing policy) – see docs/CONTENT-SOURCES.md.
+ * 2026-11-23. They are shown VAT excluded (+ ALV, owner's decision 2026-11-23)
+ * – see src/data/packages.ts → vatNote/vatShort.
  *
  * Positioning (owner's brief, 2026-11-23): every package gets the same premium
  * design, Conversion First planning and craftsmanship. Hermes and Apollo differ

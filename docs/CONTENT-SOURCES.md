@@ -16,6 +16,7 @@ All facts on the site come from the previous hadesdesign.fi (checked 2026-10). T
 - Website packages **Hermes 800 €** (one page), **Apollo 1 000 €** (multi-page, the recommended package) and **Zeus** = Apollo + add-ons: booking system and admin dashboard **+400 €**, online payments **+300 €**, analytics **+100 €**, each additional language **+100 €**. All four with one extra language = **1 900 €**. Contents per package, add-on scope and limits as in the owner's brief; all of it lives in `src/data/pricing.ts`.
 - Philosophy "Conversion First" / "Suunniteltu näyttämään hyvältä. Rakennettu myymään."
 - Apollo is labelled **"Suosituin"** / "Most popular" (owner's choice, 2026-11-23).
+- **VAT (2026-11-23):** Hermes/Apollo/Zeus and the add-ons are shown **VAT excluded** – "+ ALV" / "Hintoihin lisätään ALV." (one place: `src/data/packages.ts` → `vatNote`/`vatShort`; `valueAddedTaxIncluded: false` in `src/seo/schema.ts`). The amounts are unchanged; this replaced the earlier "sis. ALV" policy.
 - **Conversion First brief (2026-11-23):** online stores and website redesign are **no longer marketed as separate services** (a new site for a business with an old one is still built through the packages). Hermes has the **same** premium design, Conversion First planning, animations where appropriate, responsiveness, SEO, performance and accessibility as Apollo; the only differences are one page vs. several pages and a simple form (name, email, optional phone, message) vs. a business-specific form. Zeus = Apollo + optional add-ons, never a different quality tier. The booking add-on is built on Hades Design's reusable booking system; analytics = an agreed basic setup such as GA4 with privacy/consent configuration, no ongoing analysis; payment-provider fees are not included.
 - Post-launch support and maintenance are **separately paid** services (owner's rule, 2026-10-14). The old "60 days of support" claim was removed everywhere – do not reintroduce it.
 - Pricing and maintenance FAQs, including "99,9 % käytettävyys" and daily backups kept 30 days.
@@ -27,7 +28,6 @@ All facts on the site come from the previous hadesdesign.fi (checked 2026-10). T
 
 - Business ID (Y-tunnus), street address, opening hours.
 - Whether maintenance prices include VAT (never stated, so the site does not say).
-- **Whether Hermes/Apollo/Zeus prices include VAT.** The site applies its existing policy ("Hinnat sisältävät ALV:n", one string in `src/data/packages.ts` → `vatNote`/`vatShort`, plus `valueAddedTaxIncluded` in `src/seo/schema.ts`). Owner to confirm.
 - Delivery times for the new packages (the old 1–2 / 2–3 week figures belonged to Kevyt/Verkkosivupaketti; the FAQ now says the schedule comes with the quote), Apollo's page count, whether extra pages still cost 100 €/page.
 - How much translation the 100 € language price covers (the site says the scope is agreed in the quote).
 - Client numbers, years in business, statistics, other clients or testimonials.
@@ -36,7 +36,6 @@ All facts on the site come from the previous hadesdesign.fi (checked 2026-10). T
 
 Not documented anywhere, so the site deliberately **does not** state them. Confirm (or supply) before merging `conversion-first-redesign`:
 
-- **VAT** on Hermes/Apollo/Zeus and the add-ons – still shown as "sis. ALV" (existing policy, see above).
 - **Domain name** – whether a domain/its registration is included or helped with. No FAQ answer was added for "Kuuluuko verkkotunnus hintaan?".
 - **Delivery times** per package (the FAQ says the schedule comes with the quote).
 - **Number of revisions** (terms §5: defined in the project agreement) – the site promises none.

@@ -113,16 +113,16 @@ function tierOffer(id: TierId, locale: Locale) {
     seller: { '@id': ORG_ID },
     url: absoluteUrl(PATHS.pricing[locale]),
   }
-  if (id !== 'zeus') return { ...base, price: headlinePrice(id), priceSpecification: euro(headlinePrice(id), true) }
+  if (id !== 'zeus') return { ...base, price: headlinePrice(id), priceSpecification: euro(headlinePrice(id), false) }
   return {
     ...base,
-    priceSpecification: { '@type': 'PriceSpecification', minPrice: ZEUS_FROM_PRICE, priceCurrency: 'EUR', valueAddedTaxIncluded: true },
+    priceSpecification: { '@type': 'PriceSpecification', minPrice: ZEUS_FROM_PRICE, priceCurrency: 'EUR', valueAddedTaxIncluded: false },
     addOn: addons.map((addon) => ({
       '@type': 'Offer',
       name: addon.name[locale],
       price: addon.price,
       priceCurrency: 'EUR',
-      priceSpecification: euro(addon.price, true),
+      priceSpecification: euro(addon.price, false),
     })),
   }
 }
@@ -142,7 +142,7 @@ function maintenanceOffer(locale: Locale) {
   }
 }
 
-/** Offers on the pricing page: the website packages (VAT included) and the maintenance plan (VAT not stated). */
+/** Offers on the pricing page: the website packages (VAT excluded) and the maintenance plan (VAT not stated). */
 export function offerNodes(locale: Locale) {
   return [...tierOffers(locale), maintenanceOffer(locale)]
 }
