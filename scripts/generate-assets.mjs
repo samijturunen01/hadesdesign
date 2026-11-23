@@ -107,9 +107,10 @@ console.log('brand favicon.svg, favicon-32, apple-touch-icon, icon-192/512, bran
 // ---------------------------------------------------------------------------
 // 3. Open Graph images (headless Chrome)
 // ---------------------------------------------------------------------------
+// `size`: headline px – keep the title + accent to three lines in the 700 px column.
 const OG = {
-  fi: { kicker: 'Verkkosivut · Verkkokaupat · Ylläpito', title: 'Verkkosivut, jotka', accent: 'tekevät vaikutuksen.' },
-  en: { kicker: 'Websites · Online stores · Maintenance', title: 'Websites that', accent: 'leave a mark.' },
+  fi: { kicker: 'Verkkosivut yrityksille · Conversion First', title: 'Suunniteltu näyttämään hyvältä.', accent: 'Rakennettu myymään.', size: 66 },
+  en: { kicker: 'Websites for businesses · Conversion First', title: 'Designed to look good.', accent: 'Built to sell.', size: 76 },
 }
 
 function findChrome() {
@@ -126,7 +127,7 @@ function findChrome() {
 
 const fontUrl = (pkg, file) => pathToFileURL(path.join(root, 'node_modules', '@fontsource-variable', pkg, 'files', file)).href
 
-function ogHtml({ kicker, title, accent }) {
+function ogHtml({ kicker, title, accent, size = 84 }) {
   return `<!doctype html><html><head><meta charset="utf-8"><style>
 @font-face{font-family:Fraunces;font-weight:100 900;src:url(${fontUrl('fraunces', 'fraunces-latin-opsz-normal.woff2')})}
 @font-face{font-family:Fraunces;font-style:italic;font-weight:100 900;src:url(${fontUrl('fraunces', 'fraunces-latin-wght-italic.woff2')})}
@@ -145,8 +146,8 @@ body{position:relative;font-family:Hanken,sans-serif}
 .brand{display:flex;align-items:center;gap:18px;font:600 30px/1 Hanken;letter-spacing:.01em}
 .brand svg{width:56px;height:56px}
 .kicker{margin-top:auto;font:600 22px/1 Hanken;letter-spacing:.14em;text-transform:uppercase;color:#ffb36b}
-h1{margin:22px 0 0;font:500 84px/1.02 Fraunces;letter-spacing:-.02em}
-em{display:block;font-style:italic;font-weight:400;background:linear-gradient(90deg,#ff7a3d,#ffc07a);-webkit-background-clip:text;color:transparent}
+h1{margin:22px 0 0;font:500 ${size}px/1.04 Fraunces;letter-spacing:-.02em}
+em{display:block;padding-bottom:.12em;font-style:italic;font-weight:400;background:linear-gradient(90deg,#ff7a3d,#ffc07a);-webkit-background-clip:text;color:transparent}
 .url{margin-top:34px;font:500 24px/1 Hanken;color:#b9b2c6}
 </style></head><body><div class="bg"></div><div class="glass"></div><div class="glass b"></div>
 <div class="wrap"><div class="brand">${markSvg(56)}Hades Design</div>
